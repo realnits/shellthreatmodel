@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ title }} Threat Model</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; color: #0b0d17; }
+      table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+      th, td { border: 1px solid #ccc; padding: 0.6rem; text-align: left; }
+      th { background: #f2f4f8; }
+      .risk-High { color: #b00020; font-weight: bold; }
+      .risk-Medium { color: #e67e22; font-weight: bold; }
+      .risk-Low { color: #2e7d32; font-weight: bold; }
+      h2 { margin-top: 2rem; }
+    </style>
+  </head>
+  <body>
+    <h1>{{ title }} Threat Model</h1>
+    {% if threats %}
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Threat</th>
+          <th>STRIDE</th>
+          <th>DREAD Avg</th>
+          <th>Risk Level</th>
+          <th>Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for threat in threats %}
+        <tr>
+          <td>{{ threat.component }}</td>
+          <td>{{ threat.threat }}</td>
+          <td>{{ threat.stride_category.value }}</td>
+          <td>{{ '%.1f' % threat.dread.average() }}</td>
+          <td class="risk-{{ threat.risk_level() }}">{{ threat.risk_level() }}</td>
+          <td>{{ threat.mitigation }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Detailed Findings</h2>
+    {% for threat in threats %}
+    <section>
+      <h3>{{ threat.component }} – {{ threat.threat }}</h3>
+      <ul>
+        <li>STRIDE: {{ threat.stride_category.value }}</li>
+        <li>DREAD: Damage {{ threat.dread.damage }}, Repro {{ threat.dread.reproducibility }}, Exploit {{ threat.dread.exploitability }}, Users {{ threat.dread.affected_users }}, Discover {{ threat.dread.discoverability }}</li>
+        <li>Average: {{ '%.1f' % threat.dread.average() }} ({{ threat.risk_level() }})</li>
+        <li>Mitigation: {{ threat.mitigation }}</li>
+        <li>Methodology: {{ threat.methodology }}</li>
+        {% if threat.references %}
+        <li>References: {% for ref in threat.references %}{{ ref }}{% if not loop.last %}, {% endif %}{% endfor %}</li>
+        {% endif %}
+      </ul>
+    </section>
+    {% endfor %}
+    {% else %}
+    <p>No threats identified.</p>
+    {% endif %}
+  </body>
+</html>

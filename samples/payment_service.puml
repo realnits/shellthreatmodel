@@ -1,0 +1,18 @@
+@startuml PaymentService
+' Define trust boundaries
+package "Public Zone" {
+  node "Client" as client
+  [Web Frontend] as frontend
+  [Auth API] as auth
+}
+
+package "Private Zone" {
+  database "Payment DB" as payment_db
+  [Payments Worker] as worker
+}
+
+frontend --> auth : HTTPS login
+auth --> payment_db : store tokens
+frontend --> worker : publish order events
+worker --> payment_db : process payments
+@enduml

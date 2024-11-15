@@ -1,0 +1,117 @@
+Metadata-Version: 2.4
+Name: shellthreatmodel
+Version: 0.1.0
+Summary: CLI tool for automated STRIDE/DREAD threat modeling from architecture artifacts.
+Author-email: Your Name <you@example.com>
+License: Proprietary
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: typer>=0.12.3
+Requires-Dist: shellingham>=1.5.4
+Requires-Dist: pydantic>=2.7.0
+Requires-Dist: pyyaml>=6.0.1
+Requires-Dist: jsonschema>=4.22.0
+Requires-Dist: jinja2>=3.1.4
+Requires-Dist: rich>=13.7.0
+Requires-Dist: networkx>=3.2.1
+Requires-Dist: graphviz>=0.20.3
+Requires-Dist: openai>=1.37.0
+Requires-Dist: httpx>=0.27.0
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: uvicorn>=0.30.0
+Requires-Dist: fastapi>=0.112.0
+Provides-Extra: full
+Requires-Dist: plantuml-parser>=0.3.0; extra == "full"
+Requires-Dist: orjson>=3.10.6; extra == "full"
+Requires-Dist: pyinstaller>=6.8.0; extra == "full"
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Provides-Extra: dynamic
+Requires-Dist: classifiers; extra == "dynamic"
+
+# ShellThreatModel
+
+ShellThreatModel is a production-oriented CLI and API that automates STRIDE/DREAD threat modeling directly from architecture diagrams (PlantUML) and structured design documents (JSON/YAML). It supports both deterministic non-AI rules and LLM-assisted analysis, producing actionable reports and attack graph visualisations for security teams.
+
+## Features
+
+- Parse PlantUML, JSON, and YAML architecture specifications into a unified model.
+- Generate threats using either a deterministic STRIDE/DREAD rules engine or an OpenAI-compatible LLM.
+- Output consolidated findings as Markdown, HTML, and JSON (including DREAD metrics and mitigations).
+- Optional attack graph visualisation via Graphviz.
+- FastAPI service for SaaS integrations and GitHub Actions automation.
+- Docker/PyInstaller friendly packaging; CLI exposed via `typer`.
+
+## Quick Start
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+
+# Deterministic analysis
+touch demo.puml
+shellthreatmodel analyze demo.puml --mode rules --output-dir reports/
+
+# AI augmented analysis (requires OPENAI_API_KEY)
+shellthreatmodel analyze demo.puml --mode ai --openai-model gpt-4o-mini
+```
+
+Generated artifacts default to `threatmodel_output/*_analysis.json`, report formats (Markdown, HTML, JSON), and optional attack graphs when `--graph-output` is provided.
+
+## CLI Overview
+
+- `shellthreatmodel analyze ARCH.puml --mode ai` – run analysis, export reports.
+- `shellthreatmodel report analysis.json --format html` – regenerate a specific report.
+- `shellthreatmodel visualize --analysis analysis.json --output graph.png` – produce attack graph.
+- `shellthreatmodel serve` – launch the FastAPI server (production deployments should place behind authentication and rate limiting).
+
+Use `--help` on any subcommand to view additional options (OpenAI configuration, report selection, etc.).
+
+## API Usage
+
+Start the service:
+
+```bash
+shellthreatmodel serve --host 127.0.0.1 --port 9000
+```
+
+Send an analysis request:
+
+```bash
+curl -X POST http://127.0.0.1:9000/analyze \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "filename": "diagram.puml",
+        "content": "@startuml...",
+        "mode": "rules",
+        "return_graph": true
+      }'
+```
+
+The response includes a JSON threat report and (optionally) a base64-encoded attack graph image.
+
+## Security Considerations
+
+- Input validation ensures only supported file types are processed; additional sandboxing (e.g. container isolation) is recommended for untrusted data.
+- AI mode allows explicit API key overrides per invocation; avoid logging sensitive architecture data.
+- Apply rate limiting and authentication when exposing the FastAPI server in shared environments.
+
+## 30-Day Delivery Plan
+
+1. **Week 1** – CLI skeleton, parsers for PlantUML/JSON/YAML, baseline tests.
+2. **Week 2** – STRIDE/DREAD rules engine, report templates, visualization exports.
+3. **Week 3** – LLM integration, prompt tuning, API surface hardening.
+4. **Week 4** – Repository polish: CI/CD (GitHub Actions), Docker image, PyInstaller pipeline, SaaS readiness (FastAPI server, rate limiting hooks).
+
+## Testing
+
+```bash
+pytest
+```
+
+Unit tests cover parsing, rules engine behaviour, and critical CLI flows. Extend with integration tests (sample diagrams) and AI-mode mocks before production rollout.
+
+## License
+
+Proprietary – internal use only. Update `pyproject.toml` if you plan to distribute externally.

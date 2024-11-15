@@ -1,0 +1,23 @@
+# {{ title }} Threat Model
+
+{% if threats %}
+| Component | Threat | STRIDE | DREAD Avg | Risk Level | Mitigation |
+|-----------|--------|--------|-----------|------------|------------|
+{% for threat in threats -%}
+| {{ threat.component }} | {{ threat.threat }} | {{ threat.stride_category.value }} | {{ '%.1f' % threat.dread.average() }} | {{ threat.risk_level() }} | {{ threat.mitigation }} |
+{% endfor %}
+
+## Detailed Findings
+{% for threat in threats %}
+### {{ threat.component }} – {{ threat.threat }}
+- STRIDE: {{ threat.stride_category.value }}
+- DREAD: Damage {{ threat.dread.damage }}, Repro {{ threat.dread.reproducibility }}, Exploit {{ threat.dread.exploitability }}, Users {{ threat.dread.affected_users }}, Discover {{ threat.dread.discoverability }}
+- Average: {{ '%.1f' % threat.dread.average() }} ({{ threat.risk_level() }})
+- Mitigation: {{ threat.mitigation }}
+- Methodology: {{ threat.methodology }}
+{% if threat.references %}- References: {% for ref in threat.references %}{{ ref }}{% if not loop.last %}, {% endif %}{% endfor %}
+{% endif %}
+{% endfor %}
+{% else %}
+_No threats identified._
+{% endif %}

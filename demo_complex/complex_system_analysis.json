@@ -1,0 +1,1078 @@
+{
+  "title": "complex_system",
+  "architecture": {
+    "title": "complex_system",
+    "components": [
+      {
+        "name": "Mobile App",
+        "type": "component",
+        "description": "Mobile App",
+        "metadata": {
+          "style": "shape=ellipse;fillColor=#dae8fc;strokeColor=#6c8ebf"
+        }
+      },
+      {
+        "name": "Partner Service",
+        "type": "service",
+        "description": "Partner Service",
+        "metadata": {
+          "style": "shape=ellipse;fillColor=#ffe6cc;strokeColor=#d79b00"
+        }
+      },
+      {
+        "name": "Potential Attacker",
+        "type": "component",
+        "description": "Potential Attacker",
+        "metadata": {
+          "style": "shape=triangle;fillColor=#f8cecc;strokeColor=#b85450"
+        }
+      },
+      {
+        "name": "API Gateway",
+        "type": "api",
+        "description": "API Gateway",
+        "metadata": {
+          "style": "shape=process;fillColor=#d5e8d4;strokeColor=#82b366"
+        }
+      },
+      {
+        "name": "Web Application Firewall",
+        "type": "component",
+        "description": "Web Application Firewall",
+        "metadata": {
+          "style": "shape=process;fillColor=#f8cecc;strokeColor=#b85450"
+        }
+      },
+      {
+        "name": "Auth Service",
+        "type": "service",
+        "description": "Auth Service",
+        "metadata": {
+          "style": "shape=process;fillColor=#dae8fc;strokeColor=#6c8ebf"
+        }
+      },
+      {
+        "name": "Session Store",
+        "type": "database",
+        "description": "Session Store",
+        "metadata": {
+          "style": "shape=database;fillColor=#fff2cc;strokeColor=#d6b656"
+        }
+      },
+      {
+        "name": "Payment API",
+        "type": "api",
+        "description": "Payment API",
+        "metadata": {
+          "style": "shape=process;fillColor=#cce5ff;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "name": "Order Service",
+        "type": "service",
+        "description": "Order Service",
+        "metadata": {
+          "style": "shape=process;fillColor=#cce5ff;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "name": "Inventory Service",
+        "type": "service",
+        "description": "Inventory Service",
+        "metadata": {
+          "style": "shape=process;fillColor=#cce5ff;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "name": "Event Bus",
+        "type": "component",
+        "description": "Event Bus",
+        "metadata": {
+          "style": "shape=ellipse;fillColor=#d5e8d4;strokeColor=#82b366"
+        }
+      },
+      {
+        "name": "Card Vault",
+        "type": "database",
+        "description": "Card Vault",
+        "metadata": {
+          "style": "shape=database;fillColor=#f8cecc;strokeColor=#b85450"
+        }
+      },
+      {
+        "name": "Tokenization Service",
+        "type": "service",
+        "description": "Tokenization Service",
+        "metadata": {
+          "style": "shape=process;fillColor=#d5e8d4;strokeColor=#82b366"
+        }
+      },
+      {
+        "name": "Risk Engine",
+        "type": "component",
+        "description": "Risk Engine",
+        "metadata": {
+          "style": "shape=process;fillColor=#ffe6cc;strokeColor=#d79b00"
+        }
+      },
+      {
+        "name": "PCI Audit Logs",
+        "type": "database",
+        "description": "PCI Audit Logs",
+        "metadata": {
+          "style": "shape=database;fillColor=#fff2cc;strokeColor=#d6b656"
+        }
+      },
+      {
+        "name": "Data Lake",
+        "type": "database",
+        "description": "Data Lake",
+        "metadata": {
+          "style": "shape=database;fillColor=#d5e8d4;strokeColor=#82b366"
+        }
+      },
+      {
+        "name": "ETL Pipeline",
+        "type": "component",
+        "description": "ETL Pipeline",
+        "metadata": {
+          "style": "shape=process;fillColor=#ffe6cc;strokeColor=#d79b00"
+        }
+      },
+      {
+        "name": "ML Workbench",
+        "type": "component",
+        "description": "ML Workbench",
+        "metadata": {
+          "style": "shape=process;fillColor=#dae8fc;strokeColor=#6c8ebf"
+        }
+      },
+      {
+        "name": "Analytics Analysts",
+        "type": "component",
+        "description": "Analytics Analysts",
+        "metadata": {
+          "style": "shape=ellipse;fillColor=#fff2cc;strokeColor=#d6b656"
+        }
+      },
+      {
+        "name": "BI Dashboards",
+        "type": "component",
+        "description": "BI Dashboards",
+        "metadata": {
+          "style": "shape=process;fillColor=#d5e8d4;strokeColor=#82b366"
+        }
+      },
+      {
+        "name": "Security Operations",
+        "type": "component",
+        "description": "Security Operations",
+        "metadata": {
+          "style": "shape=ellipse;fillColor=#f8cecc;strokeColor=#b85450"
+        }
+      },
+      {
+        "name": "External Payment Processor",
+        "type": "component",
+        "description": "External Payment Processor",
+        "metadata": {
+          "style": "shape=process;fillColor=#ffe6cc;strokeColor=#d79b00"
+        }
+      },
+      {
+        "name": "Fraud Intelligence Feed",
+        "type": "component",
+        "description": "Fraud Intelligence Feed",
+        "metadata": {
+          "style": "shape=process;fillColor=#f8cecc;strokeColor=#b85450"
+        }
+      }
+    ],
+    "data_flows": [
+      {
+        "source": "Mobile App",
+        "destination": "API Gateway",
+        "protocol": null,
+        "description": "TLS 1.3, REST",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "source": "Partner Service",
+        "destination": "API Gateway",
+        "protocol": null,
+        "description": "mTLS, REST",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "source": "Potential Attacker",
+        "destination": "Web Application Firewall",
+        "protocol": null,
+        "description": "Credential Stuffing",
+        "sensitive": false,
+        "metadata": {
+          "style": "dashed=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "API Gateway",
+        "destination": "Web Application Firewall",
+        "protocol": null,
+        "description": "Traffic Inspection",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "Web Application Firewall",
+        "destination": "Auth Service",
+        "protocol": null,
+        "description": "JWT Validation",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "Auth Service",
+        "destination": "Session Store",
+        "protocol": null,
+        "description": "Session Tokens",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "Auth Service",
+        "destination": "Payment API",
+        "protocol": null,
+        "description": "OAuth Claims",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "source": "Payment API",
+        "destination": "Order Service",
+        "protocol": null,
+        "description": "RPC",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "source": "Order Service",
+        "destination": "Inventory Service",
+        "protocol": null,
+        "description": "GRPC",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "source": "Inventory Service",
+        "destination": "Event Bus",
+        "protocol": null,
+        "description": "Events",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#4a90e2"
+        }
+      },
+      {
+        "source": "Payment API",
+        "destination": "Tokenization Service",
+        "protocol": null,
+        "description": "PCI Scope",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "Tokenization Service",
+        "destination": "Card Vault",
+        "protocol": null,
+        "description": "Encrypt PAN",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "Tokenization Service",
+        "destination": "Risk Engine",
+        "protocol": null,
+        "description": "Assess Risk",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "Risk Engine",
+        "destination": "PCI Audit Logs",
+        "protocol": null,
+        "description": "Audit Trail",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "Risk Engine",
+        "destination": "External Payment Processor",
+        "protocol": null,
+        "description": "Decision",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "External Payment Processor",
+        "destination": "Tokenization Service",
+        "protocol": null,
+        "description": "Card Network",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "Fraud Intelligence Feed",
+        "destination": "Risk Engine",
+        "protocol": null,
+        "description": "Threat Intel",
+        "sensitive": false,
+        "metadata": {
+          "style": "dashed=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "Event Bus",
+        "destination": "Data Lake",
+        "protocol": null,
+        "description": "Event Stream",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "Data Lake",
+        "destination": "ETL Pipeline",
+        "protocol": null,
+        "description": "Batch",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "ETL Pipeline",
+        "destination": "ML Workbench",
+        "protocol": null,
+        "description": "Feature Store",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "ML Workbench",
+        "destination": "BI Dashboards",
+        "protocol": null,
+        "description": "Risk Scores",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "BI Dashboards",
+        "destination": "Analytics Analysts",
+        "protocol": null,
+        "description": "Insights",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "ML Workbench",
+        "destination": "Security Operations",
+        "protocol": null,
+        "description": "Alerts",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "Security Operations",
+        "destination": "Event Bus",
+        "protocol": null,
+        "description": "Playbooks",
+        "sensitive": false,
+        "metadata": {
+          "style": "endArrow=block;html=1;strokeColor=#b85450"
+        }
+      },
+      {
+        "source": "Session Store",
+        "destination": "Data Lake",
+        "protocol": null,
+        "description": "Session Audit",
+        "sensitive": false,
+        "metadata": {
+          "style": "dashed=1;strokeColor=#d79b00"
+        }
+      },
+      {
+        "source": "Auth Service",
+        "destination": "Data Lake",
+        "protocol": null,
+        "description": "Auth Logs",
+        "sensitive": false,
+        "metadata": {
+          "style": "dashed=1;strokeColor=#d79b00"
+        }
+      },
+      {
+        "source": "API Gateway",
+        "destination": "Data Lake",
+        "protocol": null,
+        "description": "API Metrics",
+        "sensitive": false,
+        "metadata": {
+          "style": "dashed=1;strokeColor=#82b366"
+        }
+      },
+      {
+        "source": "Potential Attacker",
+        "destination": "Event Bus",
+        "protocol": null,
+        "description": "DDOS",
+        "sensitive": false,
+        "metadata": {
+          "style": "dashed=1;strokeColor=#b85450"
+        }
+      }
+    ],
+    "trust_boundaries": [
+      {
+        "name": "Internet",
+        "description": null,
+        "components": [
+          "Mobile App",
+          "Partner Service",
+          "Potential Attacker"
+        ]
+      },
+      {
+        "name": "DMZ",
+        "description": null,
+        "components": [
+          "API Gateway",
+          "Web Application Firewall",
+          "Auth Service",
+          "Session Store"
+        ]
+      },
+      {
+        "name": "Internal Trusted Zone",
+        "description": null,
+        "components": [
+          "Payment API",
+          "Order Service",
+          "Inventory Service",
+          "Event Bus",
+          "External Payment Processor"
+        ]
+      },
+      {
+        "name": "PCI Secure Zone",
+        "description": null,
+        "components": [
+          "Card Vault",
+          "Tokenization Service",
+          "Risk Engine",
+          "PCI Audit Logs",
+          "Fraud Intelligence Feed"
+        ]
+      },
+      {
+        "name": "Data Analytics Zone",
+        "description": null,
+        "components": [
+          "Data Lake",
+          "ETL Pipeline",
+          "ML Workbench",
+          "Analytics Analysts",
+          "BI Dashboards",
+          "Security Operations"
+        ]
+      }
+    ],
+    "metadata": {
+      "source": "drawio"
+    }
+  },
+  "threats": [
+    {
+      "component": "Partner Service",
+      "threat": "Lack of repudiation evidence",
+      "stride_category": "Repudiation",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Introduce tamper-proof logging with correlation IDs and retention policies.",
+      "references": []
+    },
+    {
+      "component": "API Gateway",
+      "threat": "Lack of repudiation evidence",
+      "stride_category": "Repudiation",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Introduce tamper-proof logging with correlation IDs and retention policies.",
+      "references": []
+    },
+    {
+      "component": "Auth Service",
+      "threat": "Lack of repudiation evidence",
+      "stride_category": "Repudiation",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Introduce tamper-proof logging with correlation IDs and retention policies.",
+      "references": []
+    },
+    {
+      "component": "Session Store",
+      "threat": "Tampering with stored data",
+      "stride_category": "Tampering",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Ensure integrity controls (signatures, versioning) and access restrictions on data stores.",
+      "references": []
+    },
+    {
+      "component": "Session Store",
+      "threat": "Sensitive data disclosure",
+      "stride_category": "Information Disclosure",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Encrypt data at rest and enforce least-privilege access policies.",
+      "references": []
+    },
+    {
+      "component": "Payment API",
+      "threat": "Lack of repudiation evidence",
+      "stride_category": "Repudiation",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Introduce tamper-proof logging with correlation IDs and retention policies.",
+      "references": []
+    },
+    {
+      "component": "Order Service",
+      "threat": "Lack of repudiation evidence",
+      "stride_category": "Repudiation",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Introduce tamper-proof logging with correlation IDs and retention policies.",
+      "references": []
+    },
+    {
+      "component": "Inventory Service",
+      "threat": "Lack of repudiation evidence",
+      "stride_category": "Repudiation",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Introduce tamper-proof logging with correlation IDs and retention policies.",
+      "references": []
+    },
+    {
+      "component": "Card Vault",
+      "threat": "Tampering with stored data",
+      "stride_category": "Tampering",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Ensure integrity controls (signatures, versioning) and access restrictions on data stores.",
+      "references": []
+    },
+    {
+      "component": "Card Vault",
+      "threat": "Sensitive data disclosure",
+      "stride_category": "Information Disclosure",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Encrypt data at rest and enforce least-privilege access policies.",
+      "references": []
+    },
+    {
+      "component": "Tokenization Service",
+      "threat": "Lack of repudiation evidence",
+      "stride_category": "Repudiation",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Introduce tamper-proof logging with correlation IDs and retention policies.",
+      "references": []
+    },
+    {
+      "component": "PCI Audit Logs",
+      "threat": "Tampering with stored data",
+      "stride_category": "Tampering",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Ensure integrity controls (signatures, versioning) and access restrictions on data stores.",
+      "references": []
+    },
+    {
+      "component": "PCI Audit Logs",
+      "threat": "Sensitive data disclosure",
+      "stride_category": "Information Disclosure",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Encrypt data at rest and enforce least-privilege access policies.",
+      "references": []
+    },
+    {
+      "component": "Data Lake",
+      "threat": "Tampering with stored data",
+      "stride_category": "Tampering",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Ensure integrity controls (signatures, versioning) and access restrictions on data stores.",
+      "references": []
+    },
+    {
+      "component": "Data Lake",
+      "threat": "Sensitive data disclosure",
+      "stride_category": "Information Disclosure",
+      "dread": {
+        "damage": 7,
+        "reproducibility": 7,
+        "exploitability": 8,
+        "affected_users": 7,
+        "discoverability": 7,
+        "total": 36,
+        "average": 7.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Encrypt data at rest and enforce least-privilege access policies.",
+      "references": []
+    },
+    {
+      "component": "Mobile App->API Gateway",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Partner Service->API Gateway",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Potential Attacker->Web Application Firewall",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Auth Service->Session Store",
+      "threat": "Credential replay or brute-force against authentication flow",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 10,
+        "reproducibility": 9,
+        "exploitability": 9,
+        "affected_users": 8,
+        "discoverability": 8,
+        "total": 44,
+        "average": 8.8,
+        "risk_level": "High"
+      },
+      "mitigation": "Add rate limiting, anomaly detection, and MFA on authentication endpoints.",
+      "references": []
+    },
+    {
+      "component": "Auth Service->Payment API",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Auth Service->Payment API",
+      "threat": "Credential replay or brute-force against authentication flow",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 10,
+        "reproducibility": 9,
+        "exploitability": 9,
+        "affected_users": 8,
+        "discoverability": 8,
+        "total": 44,
+        "average": 8.8,
+        "risk_level": "High"
+      },
+      "mitigation": "Add rate limiting, anomaly detection, and MFA on authentication endpoints.",
+      "references": []
+    },
+    {
+      "component": "Payment API->Tokenization Service",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Risk Engine->External Payment Processor",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "External Payment Processor->Tokenization Service",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Event Bus->Data Lake",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Data Lake->ETL Pipeline",
+      "threat": "Resource exhaustion through scheduled operations",
+      "stride_category": "Denial of Service",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 6,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 30,
+        "average": 6.0,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add capacity planning, circuit breakers, and backpressure controls for scheduled jobs.",
+      "references": []
+    },
+    {
+      "component": "Security Operations->Event Bus",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Session Store->Data Lake",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Auth Service->Data Lake",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Auth Service->Data Lake",
+      "threat": "Credential replay or brute-force against authentication flow",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 10,
+        "reproducibility": 9,
+        "exploitability": 9,
+        "affected_users": 8,
+        "discoverability": 8,
+        "total": 44,
+        "average": 8.8,
+        "risk_level": "High"
+      },
+      "mitigation": "Add rate limiting, anomaly detection, and MFA on authentication endpoints.",
+      "references": []
+    },
+    {
+      "component": "API Gateway->Data Lake",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    },
+    {
+      "component": "Potential Attacker->Event Bus",
+      "threat": "Unauthenticated cross-boundary communication",
+      "stride_category": "Spoofing",
+      "dread": {
+        "damage": 6,
+        "reproducibility": 7,
+        "exploitability": 6,
+        "affected_users": 6,
+        "discoverability": 6,
+        "total": 31,
+        "average": 6.2,
+        "risk_level": "Medium"
+      },
+      "mitigation": "Add mutual authentication and allow-lists for cross-boundary traffic.",
+      "references": []
+    }
+  ]
+}

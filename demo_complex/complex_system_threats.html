@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>complex_system Threat Model</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; color: #0b0d17; }
+      table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+      th, td { border: 1px solid #ccc; padding: 0.6rem; text-align: left; }
+      th { background: #f2f4f8; }
+      .risk-High { color: #b00020; font-weight: bold; }
+      .risk-Medium { color: #e67e22; font-weight: bold; }
+      .risk-Low { color: #2e7d32; font-weight: bold; }
+      h2 { margin-top: 2rem; }
+    </style>
+  </head>
+  <body>
+    <h1>complex_system Threat Model</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Threat</th>
+          <th>STRIDE</th>
+          <th>DREAD Avg</th>
+          <th>Risk Level</th>
+          <th>Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Partner Service</td>
+          <td>Lack of repudiation evidence</td>
+          <td>Repudiation</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Introduce tamper-proof logging with correlation IDs and retention policies.</td>
+        </tr>
+        <tr>
+          <td>API Gateway</td>
+          <td>Lack of repudiation evidence</td>
+          <td>Repudiation</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Introduce tamper-proof logging with correlation IDs and retention policies.</td>
+        </tr>
+        <tr>
+          <td>Auth Service</td>
+          <td>Lack of repudiation evidence</td>
+          <td>Repudiation</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Introduce tamper-proof logging with correlation IDs and retention policies.</td>
+        </tr>
+        <tr>
+          <td>Session Store</td>
+          <td>Tampering with stored data</td>
+          <td>Tampering</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</td>
+        </tr>
+        <tr>
+          <td>Session Store</td>
+          <td>Sensitive data disclosure</td>
+          <td>Information Disclosure</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Encrypt data at rest and enforce least-privilege access policies.</td>
+        </tr>
+        <tr>
+          <td>Payment API</td>
+          <td>Lack of repudiation evidence</td>
+          <td>Repudiation</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Introduce tamper-proof logging with correlation IDs and retention policies.</td>
+        </tr>
+        <tr>
+          <td>Order Service</td>
+          <td>Lack of repudiation evidence</td>
+          <td>Repudiation</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Introduce tamper-proof logging with correlation IDs and retention policies.</td>
+        </tr>
+        <tr>
+          <td>Inventory Service</td>
+          <td>Lack of repudiation evidence</td>
+          <td>Repudiation</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Introduce tamper-proof logging with correlation IDs and retention policies.</td>
+        </tr>
+        <tr>
+          <td>Card Vault</td>
+          <td>Tampering with stored data</td>
+          <td>Tampering</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</td>
+        </tr>
+        <tr>
+          <td>Card Vault</td>
+          <td>Sensitive data disclosure</td>
+          <td>Information Disclosure</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Encrypt data at rest and enforce least-privilege access policies.</td>
+        </tr>
+        <tr>
+          <td>Tokenization Service</td>
+          <td>Lack of repudiation evidence</td>
+          <td>Repudiation</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Introduce tamper-proof logging with correlation IDs and retention policies.</td>
+        </tr>
+        <tr>
+          <td>PCI Audit Logs</td>
+          <td>Tampering with stored data</td>
+          <td>Tampering</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</td>
+        </tr>
+        <tr>
+          <td>PCI Audit Logs</td>
+          <td>Sensitive data disclosure</td>
+          <td>Information Disclosure</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Encrypt data at rest and enforce least-privilege access policies.</td>
+        </tr>
+        <tr>
+          <td>Data Lake</td>
+          <td>Tampering with stored data</td>
+          <td>Tampering</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</td>
+        </tr>
+        <tr>
+          <td>Data Lake</td>
+          <td>Sensitive data disclosure</td>
+          <td>Information Disclosure</td>
+          <td>7.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Encrypt data at rest and enforce least-privilege access policies.</td>
+        </tr>
+        <tr>
+          <td>Mobile App->API Gateway</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Partner Service->API Gateway</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Potential Attacker->Web Application Firewall</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Auth Service->Session Store</td>
+          <td>Credential replay or brute-force against authentication flow</td>
+          <td>Spoofing</td>
+          <td>8.8</td>
+          <td class="risk-High">High</td>
+          <td>Add rate limiting, anomaly detection, and MFA on authentication endpoints.</td>
+        </tr>
+        <tr>
+          <td>Auth Service->Payment API</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Auth Service->Payment API</td>
+          <td>Credential replay or brute-force against authentication flow</td>
+          <td>Spoofing</td>
+          <td>8.8</td>
+          <td class="risk-High">High</td>
+          <td>Add rate limiting, anomaly detection, and MFA on authentication endpoints.</td>
+        </tr>
+        <tr>
+          <td>Payment API->Tokenization Service</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Risk Engine->External Payment Processor</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>External Payment Processor->Tokenization Service</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Event Bus->Data Lake</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Data Lake->ETL Pipeline</td>
+          <td>Resource exhaustion through scheduled operations</td>
+          <td>Denial of Service</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add capacity planning, circuit breakers, and backpressure controls for scheduled jobs.</td>
+        </tr>
+        <tr>
+          <td>Security Operations->Event Bus</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Session Store->Data Lake</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Auth Service->Data Lake</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Auth Service->Data Lake</td>
+          <td>Credential replay or brute-force against authentication flow</td>
+          <td>Spoofing</td>
+          <td>8.8</td>
+          <td class="risk-High">High</td>
+          <td>Add rate limiting, anomaly detection, and MFA on authentication endpoints.</td>
+        </tr>
+        <tr>
+          <td>API Gateway->Data Lake</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+        <tr>
+          <td>Potential Attacker->Event Bus</td>
+          <td>Unauthenticated cross-boundary communication</td>
+          <td>Spoofing</td>
+          <td>6.2</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Add mutual authentication and allow-lists for cross-boundary traffic.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Detailed Findings</h2>
+    <section>
+      <h3>Partner Service – Lack of repudiation evidence</h3>
+      <ul>
+        <li>STRIDE: Repudiation</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Introduce tamper-proof logging with correlation IDs and retention policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>API Gateway – Lack of repudiation evidence</h3>
+      <ul>
+        <li>STRIDE: Repudiation</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Introduce tamper-proof logging with correlation IDs and retention policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Auth Service – Lack of repudiation evidence</h3>
+      <ul>
+        <li>STRIDE: Repudiation</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Introduce tamper-proof logging with correlation IDs and retention policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Session Store – Tampering with stored data</h3>
+      <ul>
+        <li>STRIDE: Tampering</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Session Store – Sensitive data disclosure</h3>
+      <ul>
+        <li>STRIDE: Information Disclosure</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Encrypt data at rest and enforce least-privilege access policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Payment API – Lack of repudiation evidence</h3>
+      <ul>
+        <li>STRIDE: Repudiation</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Introduce tamper-proof logging with correlation IDs and retention policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Order Service – Lack of repudiation evidence</h3>
+      <ul>
+        <li>STRIDE: Repudiation</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Introduce tamper-proof logging with correlation IDs and retention policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Inventory Service – Lack of repudiation evidence</h3>
+      <ul>
+        <li>STRIDE: Repudiation</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Introduce tamper-proof logging with correlation IDs and retention policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Card Vault – Tampering with stored data</h3>
+      <ul>
+        <li>STRIDE: Tampering</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Card Vault – Sensitive data disclosure</h3>
+      <ul>
+        <li>STRIDE: Information Disclosure</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Encrypt data at rest and enforce least-privilege access policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Tokenization Service – Lack of repudiation evidence</h3>
+      <ul>
+        <li>STRIDE: Repudiation</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Introduce tamper-proof logging with correlation IDs and retention policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>PCI Audit Logs – Tampering with stored data</h3>
+      <ul>
+        <li>STRIDE: Tampering</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>PCI Audit Logs – Sensitive data disclosure</h3>
+      <ul>
+        <li>STRIDE: Information Disclosure</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Encrypt data at rest and enforce least-privilege access policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Data Lake – Tampering with stored data</h3>
+      <ul>
+        <li>STRIDE: Tampering</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Ensure integrity controls (signatures, versioning) and access restrictions on data stores.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Data Lake – Sensitive data disclosure</h3>
+      <ul>
+        <li>STRIDE: Information Disclosure</li>
+        <li>DREAD: Damage 7, Repro 7, Exploit 8, Users 7, Discover 7</li>
+        <li>Average: 7.2 (Medium)</li>
+        <li>Mitigation: Encrypt data at rest and enforce least-privilege access policies.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Mobile App->API Gateway – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Partner Service->API Gateway – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Potential Attacker->Web Application Firewall – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Auth Service->Session Store – Credential replay or brute-force against authentication flow</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 10, Repro 9, Exploit 9, Users 8, Discover 8</li>
+        <li>Average: 8.8 (High)</li>
+        <li>Mitigation: Add rate limiting, anomaly detection, and MFA on authentication endpoints.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Auth Service->Payment API – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Auth Service->Payment API – Credential replay or brute-force against authentication flow</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 10, Repro 9, Exploit 9, Users 8, Discover 8</li>
+        <li>Average: 8.8 (High)</li>
+        <li>Mitigation: Add rate limiting, anomaly detection, and MFA on authentication endpoints.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Payment API->Tokenization Service – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Risk Engine->External Payment Processor – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>External Payment Processor->Tokenization Service – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Event Bus->Data Lake – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Data Lake->ETL Pipeline – Resource exhaustion through scheduled operations</h3>
+      <ul>
+        <li>STRIDE: Denial of Service</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Add capacity planning, circuit breakers, and backpressure controls for scheduled jobs.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Security Operations->Event Bus – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Session Store->Data Lake – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Auth Service->Data Lake – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Auth Service->Data Lake – Credential replay or brute-force against authentication flow</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 10, Repro 9, Exploit 9, Users 8, Discover 8</li>
+        <li>Average: 8.8 (High)</li>
+        <li>Mitigation: Add rate limiting, anomaly detection, and MFA on authentication endpoints.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>API Gateway->Data Lake – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Potential Attacker->Event Bus – Unauthenticated cross-boundary communication</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 7, Exploit 6, Users 6, Discover 6</li>
+        <li>Average: 6.2 (Medium)</li>
+        <li>Mitigation: Add mutual authentication and allow-lists for cross-boundary traffic.</li>
+      </ul>
+    </section>
+  </body>
+</html>

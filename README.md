@@ -147,15 +147,6 @@ CLI flags mirror environment variables (`--openai-model`, `--output-dir`, etc.) 
 - When exposing the FastAPI service, add authentication, rate limiting, and logging scrubbing to match organisational policy.
 
 
-## Project Roadmap
-
-| Timeline | Focus |
-|----------|-------|
-| Week 1 | CLI skeleton, PlantUML/JSON/YAML parsers, baseline tests. |
-| Week 2 | STRIDE/DREAD engine, report templates, graph exports. |
-| Week 3 | LLM integration, prompt tuning, API hardening. |
-| Week 4 | CI/CD polish (GitHub Actions), Docker/PyInstaller, SaaS-ready FastAPI deployment hooks. |
-
 ## Development Workflow
 
 ```bash
@@ -181,7 +172,3 @@ ruff format .
 **How do I customise mitigations or rules?**
 
 - Extend the rules engine tables under `src/shellthreatmodel/engines` or overlay custom YAML rulepacks and pass them via CLI.
-
-## License
-
-Proprietary – internal use only. Update `pyproject.toml` if you plan to distribute externally.

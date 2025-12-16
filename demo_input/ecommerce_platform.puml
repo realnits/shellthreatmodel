@@ -1,0 +1,112 @@
+@startuml E-Commerce Platform Architecture
+
+!define EXTERNAL_COLOR #FFE6E6
+!define DMZ_COLOR #E6F3FF
+!define INTERNAL_COLOR #E6FFE6
+!define DATABASE_COLOR #FFFFE6
+
+' Define trust boundaries
+rectangle "Internet" as internet EXTERNAL_COLOR {
+  actor "Customer" as customer
+  actor "Admin User" as admin
+}
+
+rectangle "DMZ (Public Zone)" as dmz DMZ_COLOR {
+  component "Web Application\nFirewall (WAF)" as waf
+  component "Load Balancer" as lb
+  component "Web Frontend\n(React SPA)" as frontend
+  component "API Gateway" as api_gateway
+  component "CDN\n(Static Assets)" as cdn
+}
+
+rectangle "Application Zone (Private)" as app_zone INTERNAL_COLOR {
+  component "Auth Service\n(OAuth2)" as auth_service
+  component "User Service\nAPI" as user_service
+  component "Product Catalog\nService" as product_service
+  component "Order Service" as order_service
+  component "Payment Service\n(PCI-DSS)" as payment_service
+  component "Notification Service" as notification_service
+  component "Admin Portal" as admin_portal
+}
+
+rectangle "Data Zone (Restricted)" as data_zone DATABASE_COLOR {
+  database "User Database\n(PostgreSQL)" as user_db
+  database "Product Database\n(PostgreSQL)" as product_db
+  database "Order Database\n(PostgreSQL)" as order_db
+  database "Payment Vault\n(Encrypted)" as payment_vault
+  queue "Message Queue\n(RabbitMQ)" as message_queue
+  component "Redis Cache" as cache
+  component "Elasticsearch" as search
+  storage "S3 Bucket\n(Product Images)" as s3_bucket
+}
+
+rectangle "External Services" as external EXTERNAL_COLOR {
+  component "Payment Gateway\n(Stripe)" as stripe
+  component "Email Service\n(SendGrid)" as email_service
+  component "SMS Gateway" as sms_gateway
+}
+
+' Define flows
+customer --> waf : HTTPS
+admin --> waf : HTTPS
+
+waf --> lb : HTTPS
+lb --> frontend : HTTPS
+lb --> api_gateway : HTTPS
+
+frontend --> cdn : HTTPS (Static)
+frontend --> api_gateway : HTTPS/REST
+
+api_gateway --> auth_service : HTTPS/REST\n(JWT Tokens)
+api_gateway --> user_service : gRPC
+api_gateway --> product_service : gRPC
+api_gateway --> order_service : gRPC
+api_gateway --> payment_service : HTTPS/REST\n(Sensitive: PII, Payment)
+
+admin --> admin_portal : HTTPS\n(Admin Auth)
+admin_portal --> api_gateway : HTTPS/REST
+
+auth_service --> user_db : TLS/PostgreSQL\n(Passwords, PII)
+auth_service --> cache : TLS (Session Data)
+
+user_service --> user_db : TLS/PostgreSQL\n(PII: Names, Emails)
+user_service --> cache : TLS
+
+product_service --> product_db : TLS/PostgreSQL
+product_service --> search : HTTPS
+product_service --> s3_bucket : HTTPS\n(Image URLs)
+
+order_service --> order_db : TLS/PostgreSQL\n(Sensitive: Orders)
+order_service --> message_queue : AMQP
+order_service --> payment_service : HTTPS/REST\n(Payment Requests)
+
+payment_service --> payment_vault : TLS/PostgreSQL\n(Sensitive: Card Data)
+payment_service --> stripe : HTTPS/REST\n(PCI-DSS)
+payment_service --> message_queue : AMQP
+
+notification_service --> message_queue : AMQP (Consumer)
+notification_service --> email_service : HTTPS/REST\n(Customer Emails)
+notification_service --> sms_gateway : HTTPS/REST
+
+cache --> user_db : TLS (Cache miss)
+search --> product_db : PostgreSQL (Indexing)
+
+note right of payment_vault
+  Encrypted at rest
+  PCI-DSS compliant
+  Tokenized card data
+end note
+
+note right of api_gateway
+  Rate limiting
+  API authentication
+  Request validation
+end note
+
+note right of waf
+  DDoS protection
+  SQL injection filter
+  XSS protection
+end note
+
+@enduml

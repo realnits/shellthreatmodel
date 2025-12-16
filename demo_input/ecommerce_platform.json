@@ -1,0 +1,334 @@
+{
+  "title": "E-Commerce Platform Architecture",
+  "components": [
+    {
+      "name": "Web Application Firewall (WAF)",
+      "type": "firewall",
+      "description": "DDoS protection, SQL injection filter, XSS protection"
+    },
+    {
+      "name": "Load Balancer",
+      "type": "load_balancer",
+      "description": "Distributes traffic across web servers"
+    },
+    {
+      "name": "Web Frontend",
+      "type": "web",
+      "description": "React single-page application for customers"
+    },
+    {
+      "name": "API Gateway",
+      "type": "api",
+      "description": "Rate limiting, API authentication, request validation"
+    },
+    {
+      "name": "CDN",
+      "type": "cdn",
+      "description": "Content delivery network for static assets"
+    },
+    {
+      "name": "Auth Service",
+      "type": "service",
+      "description": "OAuth2 authentication and authorization service"
+    },
+    {
+      "name": "User Service",
+      "type": "service",
+      "description": "Manages user profiles and account data"
+    },
+    {
+      "name": "Product Catalog Service",
+      "type": "service",
+      "description": "Product information and inventory management"
+    },
+    {
+      "name": "Order Service",
+      "type": "service",
+      "description": "Order processing and management"
+    },
+    {
+      "name": "Payment Service",
+      "type": "service",
+      "description": "PCI-DSS compliant payment processing service"
+    },
+    {
+      "name": "Notification Service",
+      "type": "service",
+      "description": "Sends email and SMS notifications to customers"
+    },
+    {
+      "name": "Admin Portal",
+      "type": "admin",
+      "description": "Administrative interface for staff"
+    },
+    {
+      "name": "User Database",
+      "type": "database",
+      "description": "PostgreSQL database storing user accounts and credentials"
+    },
+    {
+      "name": "Product Database",
+      "type": "database",
+      "description": "PostgreSQL database for product catalog"
+    },
+    {
+      "name": "Order Database",
+      "type": "database",
+      "description": "PostgreSQL database for order history"
+    },
+    {
+      "name": "Payment Vault",
+      "type": "database",
+      "description": "Encrypted database for tokenized payment data (PCI-DSS)"
+    },
+    {
+      "name": "Message Queue",
+      "type": "queue",
+      "description": "RabbitMQ for asynchronous task processing"
+    },
+    {
+      "name": "Redis Cache",
+      "type": "cache",
+      "description": "In-memory cache for sessions and frequent queries"
+    },
+    {
+      "name": "Elasticsearch",
+      "type": "search",
+      "description": "Search engine for product catalog"
+    },
+    {
+      "name": "S3 Bucket",
+      "type": "storage",
+      "description": "Object storage for product images and documents"
+    },
+    {
+      "name": "Payment Gateway (Stripe)",
+      "type": "external",
+      "description": "Third-party payment processor"
+    },
+    {
+      "name": "Email Service (SendGrid)",
+      "type": "external",
+      "description": "Third-party email delivery service"
+    },
+    {
+      "name": "SMS Gateway",
+      "type": "external",
+      "description": "Third-party SMS delivery service"
+    }
+  ],
+  "data_flows": [
+    {
+      "source": "Web Application Firewall (WAF)",
+      "destination": "Load Balancer",
+      "protocol": "HTTPS",
+      "description": "Filtered traffic forwarded to load balancer"
+    },
+    {
+      "source": "Load Balancer",
+      "destination": "Web Frontend",
+      "protocol": "HTTPS",
+      "description": "Static content and SPA delivery"
+    },
+    {
+      "source": "Load Balancer",
+      "destination": "API Gateway",
+      "protocol": "HTTPS",
+      "description": "API requests from clients"
+    },
+    {
+      "source": "Web Frontend",
+      "destination": "CDN",
+      "protocol": "HTTPS",
+      "description": "Static assets (JS, CSS, images)"
+    },
+    {
+      "source": "Web Frontend",
+      "destination": "API Gateway",
+      "protocol": "HTTPS",
+      "description": "REST API calls with JWT tokens"
+    },
+    {
+      "source": "API Gateway",
+      "destination": "Auth Service",
+      "protocol": "HTTPS",
+      "description": "Authentication and token validation",
+      "sensitive": true
+    },
+    {
+      "source": "API Gateway",
+      "destination": "User Service",
+      "protocol": "gRPC",
+      "description": "User profile operations",
+      "sensitive": true
+    },
+    {
+      "source": "API Gateway",
+      "destination": "Product Catalog Service",
+      "protocol": "gRPC",
+      "description": "Product queries and search"
+    },
+    {
+      "source": "API Gateway",
+      "destination": "Order Service",
+      "protocol": "gRPC",
+      "description": "Order placement and tracking"
+    },
+    {
+      "source": "API Gateway",
+      "destination": "Payment Service",
+      "protocol": "HTTPS",
+      "description": "Payment processing requests (PII, payment data)",
+      "sensitive": true
+    },
+    {
+      "source": "Admin Portal",
+      "destination": "API Gateway",
+      "protocol": "HTTPS",
+      "description": "Admin operations with elevated privileges",
+      "sensitive": true
+    },
+    {
+      "source": "Auth Service",
+      "destination": "User Database",
+      "protocol": "PostgreSQL/TLS",
+      "description": "User credentials, password hashes, PII",
+      "sensitive": true
+    },
+    {
+      "source": "Auth Service",
+      "destination": "Redis Cache",
+      "protocol": "TLS",
+      "description": "Session data and authentication tokens",
+      "sensitive": true
+    },
+    {
+      "source": "User Service",
+      "destination": "User Database",
+      "protocol": "PostgreSQL/TLS",
+      "description": "User profiles (names, emails, addresses)",
+      "sensitive": true
+    },
+    {
+      "source": "User Service",
+      "destination": "Redis Cache",
+      "protocol": "TLS",
+      "description": "Cached user profile data"
+    },
+    {
+      "source": "Product Catalog Service",
+      "destination": "Product Database",
+      "protocol": "PostgreSQL/TLS",
+      "description": "Product information and pricing"
+    },
+    {
+      "source": "Product Catalog Service",
+      "destination": "Elasticsearch",
+      "protocol": "HTTPS",
+      "description": "Product search queries"
+    },
+    {
+      "source": "Product Catalog Service",
+      "destination": "S3 Bucket",
+      "protocol": "HTTPS",
+      "description": "Product image retrieval"
+    },
+    {
+      "source": "Order Service",
+      "destination": "Order Database",
+      "protocol": "PostgreSQL/TLS",
+      "description": "Order records and customer purchases",
+      "sensitive": true
+    },
+    {
+      "source": "Order Service",
+      "destination": "Message Queue",
+      "protocol": "AMQP",
+      "description": "Order events for notification service"
+    },
+    {
+      "source": "Order Service",
+      "destination": "Payment Service",
+      "protocol": "HTTPS",
+      "description": "Payment authorization requests",
+      "sensitive": true
+    },
+    {
+      "source": "Payment Service",
+      "destination": "Payment Vault",
+      "protocol": "PostgreSQL/TLS",
+      "description": "Encrypted payment tokens and card data",
+      "sensitive": true
+    },
+    {
+      "source": "Payment Service",
+      "destination": "Payment Gateway (Stripe)",
+      "protocol": "HTTPS",
+      "description": "Payment processing via Stripe API (PCI-DSS)",
+      "sensitive": true
+    },
+    {
+      "source": "Payment Service",
+      "destination": "Message Queue",
+      "protocol": "AMQP",
+      "description": "Payment status events"
+    },
+    {
+      "source": "Notification Service",
+      "destination": "Message Queue",
+      "protocol": "AMQP",
+      "description": "Consumes order and payment events"
+    },
+    {
+      "source": "Notification Service",
+      "destination": "Email Service (SendGrid)",
+      "protocol": "HTTPS",
+      "description": "Order confirmation and shipping emails"
+    },
+    {
+      "source": "Notification Service",
+      "destination": "SMS Gateway",
+      "protocol": "HTTPS",
+      "description": "SMS notifications for critical events"
+    },
+    {
+      "source": "Redis Cache",
+      "destination": "User Database",
+      "protocol": "PostgreSQL/TLS",
+      "description": "Cache refresh on miss"
+    },
+    {
+      "source": "Elasticsearch",
+      "destination": "Product Database",
+      "protocol": "PostgreSQL",
+      "description": "Periodic index updates"
+    }
+  ],
+  "trust_boundaries": [
+    {
+      "name": "Internet (Untrusted)",
+      "description": "Public internet - untrusted zone",
+      "components": ["Payment Gateway (Stripe)", "Email Service (SendGrid)", "SMS Gateway"]
+    },
+    {
+      "name": "DMZ (Public Zone)",
+      "description": "Demilitarized zone for public-facing components",
+      "components": ["Web Application Firewall (WAF)", "Load Balancer", "Web Frontend", "API Gateway", "CDN"]
+    },
+    {
+      "name": "Application Zone (Private)",
+      "description": "Internal application services - restricted access",
+      "components": ["Auth Service", "User Service", "Product Catalog Service", "Order Service", "Payment Service", "Notification Service", "Admin Portal"]
+    },
+    {
+      "name": "Data Zone (Restricted)",
+      "description": "Highly restricted data storage layer",
+      "components": ["User Database", "Product Database", "Order Database", "Payment Vault", "Message Queue", "Redis Cache", "Elasticsearch", "S3 Bucket"]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-12-16",
+    "description": "Comprehensive e-commerce platform with payment processing, user management, and order fulfillment"
+  }
+}

@@ -30,20 +30,55 @@ ShellThreatModel delivers production-ready threat models from PlantUML, draw.io,
 
 ## Key Features
 
-- **Universal parsing** – unify PlantUML, draw.io (diagrams.net), JSON, and YAML into a canonical architecture model.
-- **Vision-to-PlantUML** – convert PNG/JPEG/SVG/PDF diagrams to PlantUML via OpenAI vision (optional).
+- **Universal parsing** – unify PlantUML, draw.io (diagrams.net), JSON, YAML, and images (OCR) into a canonical architecture model.
+- **OCR support** – extract architecture diagrams from PNG/JPG/WEBP images using Tesseract OCR (optional).
+- **Vision-to-PlantUML** – convert image diagrams to PlantUML via OpenAI vision API (optional).
+- **Browser-based UI** – upload and analyze diagrams entirely in your browser with PyScript (no backend needed).
 - **Multiple engines** – deterministic STRIDE/DREAD rules, seven-step PASTA methodology, or LLM-assisted heuristics.
 - **Rich outputs** – Markdown, HTML, JSON findings plus DREAD metrics, mitigations, and optional Graphviz attack graphs.
+- **Modern SaaS-style reports** – professional, minimal design optimized for security engineer review.
 - **API ready** – expose analyses via a FastAPI service for CI pipelines or SaaS workflows.
-- **Deployment friendly** – Typer-based CLI, Docker/PyInstaller compatible packaging, and GitHub Actions integration.
+- **Deployment friendly** – Typer-based CLI, Docker/PyInstaller compatible packaging, and GitHub Pages deployment.
 
 ## Installation
+
+### CLI Installation
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
+
+### With OCR Support (optional)
+
+For parsing architecture diagrams from images (PNG, JPG, WEBP, etc.):
+
+```bash
+pip install -e .[ocr]
+```
+
+This installs Pillow and pytesseract. You'll also need Tesseract OCR installed on your system:
+
+**macOS:**
+```bash
+brew install tesseract
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install tesseract-ocr
+```
+
+**Windows:**
+Download the installer from [GitHub](https://github.com/UB-Mannheim/tesseract/wiki)
+
+### Browser-Based UI
+
+Visit the GitHub Pages deployment for a fully client-side threat modeling tool:
+https://realnits.github.io/shellthreatmodel/
+
+No installation needed – upload diagrams and analyze threats directly in your browser!
 
 ShellThreatModel targets Python 3.11+. Graphviz is recommended if you plan to render attack graphs (`brew install graphviz` on macOS).
 
@@ -58,6 +93,8 @@ Run the full test suite with `pytest` and format using `ruff format` / `ruff che
 
 ## Quick Start
 
+### CLI Usage
+
 ```bash
 # Deterministic STRIDE/DREAD analysis
 shellthreatmodel analyze demo.puml --mode rules --output-dir reports/
@@ -71,11 +108,22 @@ shellthreatmodel analyze demo.puml --mode ai --openai-model gpt-4o-mini
 # draw.io diagram (diagrams.net) imports
 shellthreatmodel analyze diagram.drawio --mode rules
 
+# OCR-based image parsing (requires OCR dependencies)
+shellthreatmodel analyze screenshot.png --mode rules
+
 # Auto-extract from an architecture image (requires OPENAI_API_KEY)
 shellthreatmodel analyze diagram.png --mode rules --from-image
 ```
 
-Each run produces an `*_analysis.json` file plus Markdown, HTML, and JSON report variants in the chosen output directory. Attach `--graph-output graph.png` to emit a Graphviz attack graph.
+### Browser UI Usage
+
+1. Visit https://realnits.github.io/shellthreatmodel/
+2. Upload your architecture diagram (Draw.io, PlantUML, JSON, YAML, or Image)
+3. Select threat modeling engine (PASTA or Rules)
+4. Click "Analyze Architecture"
+5. View results and download reports (HTML/MD/JSON) or Print to PDF
+
+Each CLI run produces an `*_analysis.json` file plus Markdown, HTML, and JSON report variants in the chosen output directory. Attach `--graph-output graph.png` to emit a Graphviz attack graph.
 
 ## Engines at a Glance
 
@@ -91,8 +139,15 @@ Switch engines per invocation (`--mode`) or mix outputs across different diagram
 
 - **PlantUML / Text manifests** – pass the `.puml`, `.json`, or `.yaml` file directly.
 - **draw.io XML** – the parser recognises `.drawio`, `.drawio.xml`, `.dio`, and `.dio.xml` exports.
-- **Images** – supply `--from-image` alongside any supported image format; ShellThreatModel will invoke the vision pipeline to transcribe and then analyse.
+- **Images (OCR)** – upload `.png`, `.jpg`, `.jpeg`, `.webp`, `.bmp` files; the parser uses Tesseract OCR to extract text and identify components, flows, and boundaries.
+- **Images (AI Vision)** – supply `--from-image` alongside any supported image format; ShellThreatModel will invoke the OpenAI vision API to transcribe and then analyse.
 - **Trust boundaries & flows** – ensure swimlanes, groups, and connectors are labelled in draw.io for richer PASTA outputs.
+
+**OCR Tips:**
+- Use high-resolution, clear images with readable text
+- Ensure component names and flow labels are visible and well-spaced
+- Include keywords like "API", "Database", "Service" to help component identification
+- The OCR parser looks for architecture keywords and spatial relationships
 
 Use `shellthreatmodel report analysis.json --format html` to regenerate a single report or `shellthreatmodel visualize --analysis analysis.json --output graph.png` for custom graph renders.
 

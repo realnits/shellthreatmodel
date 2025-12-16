@@ -109,19 +109,70 @@ async def setup():
             file_obj = file_input.files.item(0)
             file_name = file_obj.name
             input_basename = slugify(file_name.rsplit(".", 1)[0], default="architecture")
+            file_ext = file_name.rsplit(".", 1)[-1].lower()
             
-            # Read file content
-            array_buffer = await file_obj.arrayBuffer()
-            uint8_view = Uint8Array.new(array_buffer)
-            content_bytes = bytes(uint8_view)
+            # Check if it's an image file
+            is_image = file_ext in ["png", "jpg", "jpeg", "webp", "bmp", "gif"]
             
-            # Write to virtual FS
-            input_path = Path(f"/tmp/{file_name}")
-            input_path.write_bytes(content_bytes)
-            
-            # Load Architecture
-            console.log(f"Loading architecture from {input_path}")
-            architecture = load_architecture(input_path)
+            if is_image:
+                # Process image with OCR
+                console.log(f"Processing image file: {file_name}")
+                report_content.innerHTML = """
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                        <p class="text-blue-700 font-semibold">🔍 Running OCR on image...</p>
+                        <p class="text-sm text-blue-600">This may take 10-30 seconds depending on image complexity.</p>
+                    </div>
+                """
+                results_container.classList.remove("hidden")
+                
+                # Run OCR using Tesseract.js
+                array_buffer = await file_obj.arrayBuffer()
+                uint8_view = Uint8Array.new(array_buffer)
+                
+                # Convert to blob URL for Tesseract
+                blob = js.Blob.new([uint8_view], {"type": file_obj.type})
+                blob_url = js.URL.createObjectURL(blob)
+                
+                # Run OCR
+                ocr_result = await js.Tesseract.recognize(blob_url, 'eng')
+                extracted_text = ocr_result.data.text
+                js.URL.revokeObjectURL(blob_url)
+                
+                console.log(f"OCR extracted {len(extracted_text)} characters")
+                
+                if len(extracted_text.strip()) < 10:
+                    raise Exception("No meaningful text extracted from image. Please use a clearer image with readable text.")
+                
+                # Create a JSON architecture from OCR text using JavaScript helper
+                if not hasattr(window, 'js_ocr_to_architecture'):
+                    raise Exception("OCR parsing function not found. Please refresh the page.")
+                
+                js_func = window.js_ocr_to_architecture
+                architecture_data = await js_func(extracted_text, file_name)
+                
+                # Convert JS object to Python dict
+                import json
+                architecture_json = js.JSON.stringify(architecture_data)
+                architecture_dict = json.loads(architecture_json)
+                
+                # Write JSON to virtual FS and load it
+                json_path = Path(f"/tmp/{input_basename}_ocr.json")
+                json_path.write_text(json.dumps(architecture_dict), encoding='utf-8')
+                architecture = load_architecture(json_path)
+                
+            else:
+                # Read file content normally
+                array_buffer = await file_obj.arrayBuffer()
+                uint8_view = Uint8Array.new(array_buffer)
+                content_bytes = bytes(uint8_view)
+                
+                # Write to virtual FS
+                input_path = Path(f"/tmp/{file_name}")
+                input_path.write_bytes(content_bytes)
+                
+                # Load Architecture
+                console.log(f"Loading architecture from {input_path}")
+                architecture = load_architecture(input_path)
             
             # Select Engine
             engine_type = document.getElementById("engine-select").value

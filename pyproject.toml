@@ -29,10 +29,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+ocr = [
+    "pillow>=10.0.0",
+    "pytesseract>=0.3.10"
+]
 full = [
     "plantuml-parser>=0.3.0",
     "orjson>=3.10.6",
-    "pyinstaller>=6.8.0"
+    "pyinstaller>=6.8.0",
+    "pillow>=10.0.0",
+    "pytesseract>=0.3.10"
 ]
 dev = [
     "pytest>=8.0.0"

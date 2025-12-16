@@ -11,6 +11,7 @@ from shellthreatmodel.parsers.drawio_parser import DrawioArchitectureParser
 from shellthreatmodel.parsers.json_parser import JSONArchitectureParser
 from shellthreatmodel.parsers.plantuml_parser import PlantUMLArchitectureParser
 from shellthreatmodel.parsers.yaml_parser import YAMLArchitectureParser
+from shellthreatmodel.parsers.image_parser import ImageArchitectureParser
 
 
 def default_parsers() -> list[ArchitectureParser]:
@@ -19,6 +20,7 @@ def default_parsers() -> list[ArchitectureParser]:
         JSONArchitectureParser(),
         YAMLArchitectureParser(),
         DrawioArchitectureParser(),
+        ImageArchitectureParser(),
     ]
 
 

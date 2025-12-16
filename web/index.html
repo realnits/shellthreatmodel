@@ -5,8 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Threat Model - Web UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    
+    <script>
+        // OCR parsing helper - must be defined before PyScript loads
+        window.js_ocr_to_architecture = async function(text, filename) {
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const components = [];
+            const flows = [];
+            const boundaries = [];
+            const seenNames = new Set();
+            
+            // Keywords for detection
+            const componentKeywords = [
+                'api', 'service', 'database', 'db', 'server', 'client', 'gateway', 'proxy',
+                'cache', 'queue', 'worker', 'scheduler', 'auth', 'storage', 'bucket',
+                'function', 'lambda', 'container', 'pod', 'node', 'cluster', 'balancer',
+                'firewall', 'cdn', 'web', 'app', 'mobile', 'frontend', 'backend'
+            ];
+            
+            const flowKeywords = ['->', '→', '=>', '-->', 'flow', 'request', 'response', 'sends', 'calls', 'queries'];
+            const boundaryKeywords = ['zone', 'boundary', 'trust', 'perimeter', 'vpc', 'network', 'subnet', 'public', 'private', 'dmz'];
+            
+            // Extract components
+            for (const line of lines) {
+                const lowerLine = line.toLowerCase();
+                
+                for (const keyword of componentKeywords) {
+                    if (lowerLine.includes(keyword)) {
+                        let name = line.replace(/[^\w\s\-_]/g, ' ').trim();
+                        name = name.replace(/\s+/g, ' ');
+                        
+                        if (name && !seenNames.has(name) && name.length < 100) {
+                            seenNames.add(name);
+                            
+                            let type = 'component';
+                            if (lowerLine.includes('database') || lowerLine.includes('db') || lowerLine.includes('storage')) {
+                                type = 'database';
+                            } else if (lowerLine.includes('api') || lowerLine.includes('gateway')) {
+                                type = 'api';
+                            } else if (lowerLine.includes('queue') || lowerLine.includes('kafka')) {
+                                type = 'queue';
+                            } else if (lowerLine.includes('cache') || lowerLine.includes('redis')) {
+                                type = 'cache';
+                            } else if (lowerLine.includes('auth') || lowerLine.includes('identity')) {
+                                type = 'auth';
+                            } else if (lowerLine.includes('web') || lowerLine.includes('frontend')) {
+                                type = 'web';
+                            } else if (lowerLine.includes('service') || lowerLine.includes('server')) {
+                                type = 'service';
+                            }
+                            
+                            components.push({
+                                name: name,
+                                type: type,
+                                description: 'Extracted via OCR'
+                            });
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Extract flows
+            for (const line of lines) {
+                const lowerLine = line.toLowerCase();
+                const hasFlow = flowKeywords.some(kw => lowerLine.includes(kw));
+                
+                if (hasFlow) {
+                    let source = null;
+                    let destination = null;
+                    
+                    for (const comp of components) {
+                        if (lowerLine.includes(comp.name.toLowerCase())) {
+                            if (!source) {
+                                source = comp.name;
+                            } else if (!destination) {
+                                destination = comp.name;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (source && destination && source !== destination) {
+                        let protocol = null;
+                        if (lowerLine.includes('https')) protocol = 'HTTPS';
+                        else if (lowerLine.includes('http')) protocol = 'HTTP';
+                        else if (lowerLine.includes('grpc') || lowerLine.includes('rpc')) protocol = 'gRPC';
+                        else if (lowerLine.includes('rest') || lowerLine.includes('api')) protocol = 'REST';
+                        
+                        flows.push({
+                            source: source,
+                            destination: destination,
+                            protocol: protocol,
+                            description: line.substring(0, 200),
+                            sensitive: lowerLine.includes('sensitive') || lowerLine.includes('pii') || lowerLine.includes('personal')
+                        });
+                    }
+                }
+            }
+            
+            // Extract boundaries
+            for (const line of lines) {
+                const lowerLine = line.toLowerCase();
+                const hasBoundary = boundaryKeywords.some(kw => lowerLine.includes(kw));
+                
+                if (hasBoundary) {
+                    let name = line.replace(/[^\w\s\-_]/g, ' ').trim();
+                    name = name.replace(/\s+/g, ' ');
+                    
+                    if (name && name.length >= 3) {
+                        const associatedComponents = [];
+                        for (const comp of components) {
+                            if (lowerLine.includes(comp.name.toLowerCase())) {
+                                associatedComponents.push(comp.name);
+                            }
+                        }
+                        
+                        boundaries.push({
+                            name: name,
+                            description: 'Extracted via OCR',
+                            components: associatedComponents
+                        });
+                    }
+                }
+            }
+            
+            return {
+                title: filename.replace(/\.[^.]+$/, ''),
+                components: components,
+                data_flows: flows,
+                trust_boundaries: boundaries,
+                metadata: {
+                    source: 'image-ocr',
+                    extracted_text_length: text.length
+                }
+            };
+        };
+    </script>
     <style>
         .loading-spinner {
             border: 4px solid #f3f3f3;
@@ -68,13 +206,13 @@
                 <div class="space-y-4">
                     <h2 class="text-xl font-semibold text-gray-700">1. Upload Architecture</h2>
                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
-                        <input type="file" id="file-upload" class="hidden" accept=".xml,.json,.yaml,.yml,.puml">
+                        <input type="file" id="file-upload" class="hidden" accept=".xml,.json,.yaml,.yml,.puml,.png,.jpg,.jpeg,.webp,.bmp">
                         <label for="file-upload" class="cursor-pointer block">
                             <div class="text-gray-500 mb-2">
                                 <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                             </div>
                             <span class="text-blue-600 font-medium">Click to upload</span> or drag and drop
-                            <p class="text-xs text-gray-400 mt-1">Supports Draw.io (XML), PlantUML, JSON, YAML</p>
+                            <p class="text-xs text-gray-400 mt-1">Supports Draw.io (XML), PlantUML, JSON, YAML, Images (PNG/JPG/WEBP)</p>
                         </label>
                         <div id="file-name" class="mt-2 text-sm text-gray-700 font-medium hidden"></div>
                     </div>

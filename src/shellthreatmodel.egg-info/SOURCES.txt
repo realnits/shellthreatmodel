@@ -19,6 +19,7 @@ src/shellthreatmodel/models/architecture.py
 src/shellthreatmodel/models/threat.py
 src/shellthreatmodel/parsers/base.py
 src/shellthreatmodel/parsers/drawio_parser.py
+src/shellthreatmodel/parsers/image_parser.py
 src/shellthreatmodel/parsers/json_parser.py
 src/shellthreatmodel/parsers/plantuml_parser.py
 src/shellthreatmodel/parsers/yaml_parser.py

@@ -1,0 +1,14 @@
+packages = [
+    "pydantic", 
+    "pyyaml", 
+    "jinja2", 
+    "networkx", 
+    "rich", 
+    "typer", 
+    "micropip",
+    "jsonschema",
+    "httpx",
+    "python-dotenv",
+    "graphviz",
+    "shellingham"
+]

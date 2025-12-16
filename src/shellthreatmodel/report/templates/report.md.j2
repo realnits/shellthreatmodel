@@ -1,5 +1,52 @@
 # {{ title }} Threat Model
 
+_Generated: {{ generated_at }} (UTC)_
+
+## Architecture Overview
+
+- Components: {{ architecture.components | length }}
+- Data flows: {{ architecture.data_flows | length }}
+- Trust boundaries: {{ architecture.trust_boundaries | length }}
+
+{% if architecture.trust_boundaries %}
+### Trust Boundaries
+{% for b in architecture.trust_boundaries %}
+- **{{ b.name }}**{% if b.description %}: {{ b.description }}{% endif %}
+	- Components: {% for c in b.components %}`{{ c }}`{% if not loop.last %}, {% endif %}{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if architecture.components %}
+### Components
+| Name | Type | Description |
+|------|------|-------------|
+{% for c in architecture.components -%}
+| `{{ c.name }}` | {{ c.type }} | {{ c.description or '' }} |
+{% endfor %}
+{% endif %}
+
+{% if architecture.data_flows %}
+### Data Flows
+| Source | Destination | Protocol | Sensitive | Description |
+|--------|-------------|----------|-----------|-------------|
+{% for f in architecture.data_flows -%}
+| `{{ f.source }}` | `{{ f.destination }}` | {{ f.protocol or '' }} | {{ 'Yes' if f.sensitive else 'No' }} | {{ f.description or '' }} |
+{% endfor %}
+{% endif %}
+
+## Architecture Flaws / Findings
+{% if findings %}
+{% for f in findings %}
+### {{ f.severity }} — {{ f.area }}: {{ f.summary }}
+- {{ f.details }}
+{% if f.items %}- Affected:
+{% for item in f.items %}  - `{{ item }}`
+{% endfor %}{% endif %}
+{% endfor %}
+{% else %}
+_No obvious architecture flaws detected by heuristics._
+{% endif %}
+
 {% if threats %}
 | Component | Threat | STRIDE | DREAD Avg | Risk Level | Mitigation |
 |-----------|--------|--------|-----------|------------|------------|

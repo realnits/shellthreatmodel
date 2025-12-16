@@ -12,7 +12,11 @@ from shellthreatmodel.models.threat import DreadScore, StrideCategory, Threat
 
 def load_analysis(path: Path) -> tuple[ArchitectureModel, Sequence[Threat]]:
     data = json.loads(path.read_text(encoding="utf-8"))
-    architecture = ArchitectureModel.model_validate(data["architecture"])
+    # Pydantic v1/v2 compatibility
+    if hasattr(ArchitectureModel, 'model_validate'):
+        architecture = ArchitectureModel.model_validate(data["architecture"])
+    else:
+        architecture = ArchitectureModel.parse_obj(data["architecture"])
     threats = [
         Threat(
             component=item["component"],
@@ -35,9 +39,11 @@ def load_analysis(path: Path) -> tuple[ArchitectureModel, Sequence[Threat]]:
 
 
 def serialize_analysis(title: str, architecture: ArchitectureModel, threats: Iterable[Threat]) -> str:
+    # Pydantic v1/v2 compatibility
+    arch_dict = architecture.model_dump() if hasattr(architecture, 'model_dump') else architecture.dict()
     payload = {
         "title": title,
-        "architecture": architecture.model_dump(),
+        "architecture": arch_dict,
         "threats": [
             {
                 "component": threat.component,

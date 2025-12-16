@@ -12,71 +12,91 @@ from shellthreatmodel.models.threat import DreadScore, StrideCategory, Threat
 from shellthreatmodel.engines.base import ThreatEngine, ThreatEngineError
 
 try:  # pragma: no cover - optional dependency
-    from openai import OpenAI
+    import requests
 except ImportError:  # pragma: no cover
-    OpenAI = None  # type: ignore
+    requests = None  # type: ignore
 
 
 class AIThreatEngine(ThreatEngine):
-    """Threat engine that delegates to an LLM for adaptive threat discovery."""
+    """Threat engine that delegates to Gemini 2.5 Pro via apiGPTeal for adaptive threat discovery."""
 
     name = "ai"
 
     def __init__(
         self,
         *,
-        model: str = "gpt-4o-mini",
+        model: str = "gemini-2-5-pro",
         api_key: str | None = None,
-        base_url: str | None = None,
-        temperature: float = 0.1,
-        max_tokens: int = 1200,
+        base_url: str = "https://iapi-test.merck.com/gpt/v2/gemini-2-5-pro",
+        temperature: float = 0.7,
+        max_tokens: int = 2048,
     ) -> None:
-        if OpenAI is None:
-            raise ImportError("openai package is required for AI mode")
-        api_key = api_key or os.getenv("OPENAI_API_KEY")
+        if requests is None:
+            raise ImportError("requests package is required for AI mode")
+        api_key = api_key or os.getenv("XMerckAPIKey")
         if not api_key:
-            raise ThreatEngineError("OPENAI_API_KEY not configured")
-        client_params = {"api_key": api_key}
-        if base_url:
-            client_params["base_url"] = base_url
-        self._client = OpenAI(**client_params)  # type: ignore[arg-type]
-        self._model = model
+            raise ThreatEngineError("XMerckAPIKey not configured")
+        self._api_key = api_key
+        self._base_url = base_url
         self._temperature = temperature
         self._max_tokens = max_tokens
 
     def generate(self, architecture: ArchitectureModel) -> Iterable[Threat]:
         prompt = self._build_prompt(architecture)
-        response = self._client.responses.create(  # type: ignore[call-arg]
-            model=self._model,
-            input=[
-                {
-                    "role": "system",
-                    "content": "You are a security architect specializing in STRIDE/DREAD threat modeling.",
-                },
-                {
-                    "role": "user",
-                    "content": prompt,
-                },
-            ],
-            temperature=self._temperature,
-            max_output_tokens=self._max_tokens,
-        )
+        
+        headers = {
+            "Content-Type": "application/json",
+            "X-Merck-APIKey": self._api_key
+        }
+        
+        payload = {
+            "contents": {
+                "role": "user",
+                "parts": {
+                    "text": prompt
+                }
+            },
+            "safety_settings": {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_LOW_AND_ABOVE"
+            },
+            "generation_config": {
+                "temperature": self._temperature,
+                "topP": 0.9,
+                "topK": 40,
+                "maxOutputTokens": self._max_tokens
+            }
+        }
+        
         try:
-            text = response.output[0].content[0].text  # type: ignore[index]
-        except (AttributeError, IndexError) as exc:  # pragma: no cover - defensive
-            raise ThreatEngineError(f"Unexpected LLM response structure: {response}") from exc
+            response = requests.post(self._base_url, headers=headers, json=payload)  # type: ignore[union-attr]
+            response.raise_for_status()
+            data = response.json()
+        except Exception as exc:
+            raise ThreatEngineError(f"API request failed: {exc}") from exc
+        
+        # Extract text from Gemini response structure
+        try:
+            text = data["candidates"][0]["content"]["parts"][0]["text"]
+        except (KeyError, IndexError) as exc:
+            raise ThreatEngineError(f"Unexpected API response structure: {data}") from exc
+        
         return self._parse_response(text)
 
     def _build_prompt(self, architecture: ArchitectureModel) -> str:
+        # Pydantic v1/v2 compatibility
+        def to_dict(obj):
+            return obj.model_dump() if hasattr(obj, 'model_dump') else obj.dict()
+        
         payload = {
             "title": architecture.title,
-            "components": [component.model_dump() for component in architecture.components],
-            "data_flows": [flow.model_dump() for flow in architecture.data_flows],
-            "trust_boundaries": [boundary.model_dump() for boundary in architecture.trust_boundaries],
+            "components": [to_dict(component) for component in architecture.components],
+            "data_flows": [to_dict(flow) for flow in architecture.data_flows],
+            "trust_boundaries": [to_dict(boundary) for boundary in architecture.trust_boundaries],
         }
         return (
             "You are a security architect. Given this architecture JSON, produce STRIDE threats with DREAD scoring.\n"
-            "Return a JSON array where each item matches this schema: {"""{"component": "...", "threat": "...", "stride_category": "...", "dread_score": {"damage": int, "reproducibility": int, "exploitability": int, "affected_users": int, "discoverability": int}, "mitigation": "...", "references": ["..."]}"""}.\n"
+            'Return a JSON array where each item matches this schema: {"component": "...", "threat": "...", "stride_category": "...", "dread_score": {"damage": int, "reproducibility": int, "exploitability": int, "affected_users": int, "discoverability": int}, "mitigation": "...", "references": ["..."]}.\n'
             "All DREAD values must be integers between 0 and 10.\n"
             "Architecture JSON:\n"
             f"{json.dumps(payload, indent=2)}"

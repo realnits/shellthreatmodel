@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Threat Model - Web UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <style>
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media print {
+            header, footer, .no-print { display: none !important; }
+            @page { margin: 14mm; }
+
+            html, body { background: #ffffff !important; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            #results-container { display: block !important; }
+            #report-content { max-width: none !important; }
+
+            /* Remove app chrome styling for print */
+            main { box-shadow: none !important; }
+            * { box-shadow: none !important; text-shadow: none !important; }
+
+            /* Keep report sections from breaking awkwardly */
+            #report-content section,
+            #report-content .section,
+            #report-content table,
+            #report-content tr,
+            #report-content ul,
+            #report-content ol {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            #report-content h1,
+            #report-content h2,
+            #report-content h3 {
+                page-break-after: avoid;
+                break-after: avoid-page;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">AI Threat Model</h1>
+            <p class="text-gray-600">Automated STRIDE/DREAD threat modeling from your browser</p>
+        </header>
+
+        <main class="bg-white rounded-xl shadow-lg p-8">
+            <!-- Input Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 no-print">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-700">1. Upload Architecture</h2>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+                        <input type="file" id="file-upload" class="hidden" accept=".xml,.json,.yaml,.yml,.puml">
+                        <label for="file-upload" class="cursor-pointer block">
+                            <div class="text-gray-500 mb-2">
+                                <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            </div>
+                            <span class="text-blue-600 font-medium">Click to upload</span> or drag and drop
+                            <p class="text-xs text-gray-400 mt-1">Supports Draw.io (XML), PlantUML, JSON, YAML</p>
+                        </label>
+                        <div id="file-name" class="mt-2 text-sm text-gray-700 font-medium hidden"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-700">2. Configuration</h2>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Threat Engine</label>
+                        <select id="engine-select" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2 border">
+                            <option value="pasta">PASTA (Process for Attack Simulation)</option>
+                            <option value="rules">Rules-based (STRIDE/DREAD)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="analyze-btn" disabled class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span>Loading Application...</span>
+                        <div id="spinner" class="loading-spinner ml-3"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-container" class="hidden">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Threat Analysis Report</h2>
+                    <div class="space-x-2">
+                        <button id="download-html-btn" disabled class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                            Download HTML
+                        </button>
+                        <button id="download-md-btn" disabled class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                            Download MD
+                        </button>
+                        <button id="download-json-btn" disabled class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                            Download JSON
+                        </button>
+                        <button id="print-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            Print / Save PDF
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="report-content" class="prose max-w-none">
+                    <!-- Report will be injected here -->
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-10 text-center text-gray-500 text-sm">
+            <p>Powered by PyScript & GitHub Pages. All processing happens locally in your browser.</p>
+        </footer>
+    </div>
+
+    <!-- PyScript Configuration -->
+    <script type="py" src="./app.py" config="./pyscript.toml"></script>
+
+    <script>
+        // JS Glue code
+        const fileInput = document.getElementById('file-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const printBtn = document.getElementById('print-btn');
+        const downloadHtmlBtn = document.getElementById('download-html-btn');
+        const downloadMdBtn = document.getElementById('download-md-btn');
+        const downloadJsonBtn = document.getElementById('download-json-btn');
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileNameDisplay.textContent = e.target.files[0].name;
+                fileNameDisplay.classList.remove('hidden');
+            }
+        });
+
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+    </script>
+</body>
+</html>

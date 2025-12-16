@@ -5,6 +5,10 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+import pydantic
+
+# Pydantic v1/v2 compatibility
+PYDANTIC_V2 = hasattr(pydantic, "VERSION") and pydantic.VERSION.startswith("2")
 
 
 class Component(BaseModel):

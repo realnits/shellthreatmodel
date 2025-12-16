@@ -1,4 +1,5 @@
 import base64
+import urllib.parse
 import zlib
 from pathlib import Path
 
@@ -73,6 +74,22 @@ def test_parse_base64_encoded_diagram(tmp_path: Path):
     parser = DrawioArchitectureParser()
     model = parser.parse(path)
     assert len(model.components) == 2
+
+
+def test_parse_drawio_encoded_uri_payload(tmp_path: Path):
+  # diagrams.net commonly does:
+  #   payload = base64(raw_deflate(encodeURIComponent(mxGraphModelXML)))
+  xml = _diagram_body()
+  encoded = urllib.parse.quote(xml, safe="-_.!~*'()")
+
+  compressor = zlib.compressobj(level=9, wbits=-15)  # raw DEFLATE
+  compressed = compressor.compress(encoded.encode("utf-8")) + compressor.flush()
+  payload = base64.b64encode(compressed).decode("ascii")
+
+  path = _write_drawio(tmp_path, payload, base64_encode=False)
+  parser = DrawioArchitectureParser()
+  model = parser.parse(path)
+  assert {component.name for component in model.components} == {"Orders API", "Orders DB"}
 
 
 def test_can_parse_drawio_xml_suffix(tmp_path: Path):

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>mobsf-v1.drawio Threat Model</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; color: #0b0d17; }
+      table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+      th, td { border: 1px solid #ccc; padding: 0.6rem; text-align: left; }
+      th { background: #f2f4f8; }
+      .risk-High { color: #b00020; font-weight: bold; }
+      .risk-Medium { color: #e67e22; font-weight: bold; }
+      .risk-Low { color: #2e7d32; font-weight: bold; }
+      h2 { margin-top: 2rem; }
+    </style>
+  </head>
+  <body>
+    <h1>mobsf-v1.drawio Threat Model</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Threat</th>
+          <th>STRIDE</th>
+          <th>DREAD Avg</th>
+          <th>Risk Level</th>
+          <th>Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Component Pe-6Z7vc4aFHUBcSmwPr-53->Component CC8SS4oqa_s0rqLthlYS-36</td>
+          <td>[PASTA Stage 5] Attack path from 'Component Pe-6Z7vc4aFHUBcSmwPr-53' (Boundary Eszdm01CxK_MHUGctCEH-4) to 'Component CC8SS4oqa_s0rqLthlYS-36' (Boundary CC8SS4oqa_s0rqLthlYS-35) is exploitable if boundary controls fail, enabling lateral movement.</td>
+          <td>Spoofing</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Enforce mutual authentication (mTLS), network segmentation (zero-trust), IDS/IPS, and anomaly detection on boundary crossings.</td>
+        </tr>
+        <tr>
+          <td>Component Pe-6Z7vc4aFHUBcSmwPr-53->Component CC8SS4oqa_s0rqLthlYS-36</td>
+          <td>[PASTA Stage 5] Attack path from 'Component Pe-6Z7vc4aFHUBcSmwPr-53' (Boundary Eszdm01CxK_MHUGctCEH-4) to 'Component CC8SS4oqa_s0rqLthlYS-36' (Boundary CC8SS4oqa_s0rqLthlYS-35) is exploitable if boundary controls fail, enabling lateral movement.</td>
+          <td>Spoofing</td>
+          <td>6.0</td>
+          <td class="risk-Medium">Medium</td>
+          <td>Enforce mutual authentication (mTLS), network segmentation (zero-trust), IDS/IPS, and anomaly detection on boundary crossings.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Detailed Findings</h2>
+    <section>
+      <h3>Component Pe-6Z7vc4aFHUBcSmwPr-53->Component CC8SS4oqa_s0rqLthlYS-36 – [PASTA Stage 5] Attack path from 'Component Pe-6Z7vc4aFHUBcSmwPr-53' (Boundary Eszdm01CxK_MHUGctCEH-4) to 'Component CC8SS4oqa_s0rqLthlYS-36' (Boundary CC8SS4oqa_s0rqLthlYS-35) is exploitable if boundary controls fail, enabling lateral movement.</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 7, Users 6, Discover 5</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Enforce mutual authentication (mTLS), network segmentation (zero-trust), IDS/IPS, and anomaly detection on boundary crossings.</li>
+        <li>Methodology: PASTA Step 5: Weakness & Vulnerability Analysis</li>
+        <li>References: MITRE ATT&CK Tactic: TA0008</li>
+      </ul>
+    </section>
+    <section>
+      <h3>Component Pe-6Z7vc4aFHUBcSmwPr-53->Component CC8SS4oqa_s0rqLthlYS-36 – [PASTA Stage 5] Attack path from 'Component Pe-6Z7vc4aFHUBcSmwPr-53' (Boundary Eszdm01CxK_MHUGctCEH-4) to 'Component CC8SS4oqa_s0rqLthlYS-36' (Boundary CC8SS4oqa_s0rqLthlYS-35) is exploitable if boundary controls fail, enabling lateral movement.</h3>
+      <ul>
+        <li>STRIDE: Spoofing</li>
+        <li>DREAD: Damage 6, Repro 6, Exploit 7, Users 6, Discover 5</li>
+        <li>Average: 6.0 (Medium)</li>
+        <li>Mitigation: Enforce mutual authentication (mTLS), network segmentation (zero-trust), IDS/IPS, and anomaly detection on boundary crossings.</li>
+        <li>Methodology: PASTA Step 5: Weakness & Vulnerability Analysis</li>
+        <li>References: MITRE ATT&CK Tactic: TA0008</li>
+      </ul>
+    </section>
+  </body>
+</html>

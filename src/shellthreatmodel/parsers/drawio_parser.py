@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import html
 import re
+import urllib.parse
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Iterable
@@ -142,7 +143,20 @@ def _decode_diagram(payload: str) -> str:
     for wbits in (-15, 15, zlib.MAX_WBITS):  # try raw DEFLATE then default
         try:
             decompressed = zlib.decompress(decoded, wbits)
-            return decompressed.decode("utf-8")
+            text = decompressed.decode("utf-8")
+
+            # diagrams.net commonly stores an encodeURIComponent()-encoded XML string
+            # before compression, which yields output starting with "%3CmxGraphModel".
+            stripped = text.lstrip()
+            if stripped.startswith("%3C") or stripped.startswith("%3c"):
+                text = urllib.parse.unquote(text)
+
+            # Some exporters may additionally HTML-escape the model.
+            stripped = text.lstrip()
+            if stripped.startswith("&lt;"):
+                text = html.unescape(text)
+
+            return text
         except zlib.error:
             continue
     raise ParserError("Unable to decompress draw.io diagram payload")

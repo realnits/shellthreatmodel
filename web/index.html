@@ -12,135 +12,87 @@
     <script>
         // OCR parsing helper - must be defined before PyScript loads
         window.js_ocr_to_architecture = async function(text, filename) {
-            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            // Simple word extraction - find distinct words that look like component names
+            const words = text
+                .split(/[\s\n\r,;:(){}[\]<>|/\\]+/)
+                .map(w => w.trim().replace(/[^\w\-]/g, ''))
+                .filter(w => w.length >= 3 && w.length < 40);
+            
             const components = [];
-            const flows = [];
-            const boundaries = [];
             const seenNames = new Set();
             
-            // Keywords for detection
-            const componentKeywords = [
-                'api', 'service', 'database', 'db', 'server', 'client', 'gateway', 'proxy',
-                'cache', 'queue', 'worker', 'scheduler', 'auth', 'storage', 'bucket',
-                'function', 'lambda', 'container', 'pod', 'node', 'cluster', 'balancer',
-                'firewall', 'cdn', 'web', 'app', 'mobile', 'frontend', 'backend'
+            // Component type patterns - more focused
+            const patterns = [
+                { keywords: ['api', 'rest', 'grpc', 'graphql'], type: 'api' },
+                { keywords: ['database', 'db', 'postgres', 'mysql', 'mongo', 'sql'], type: 'database' },
+                { keywords: ['service', 'microservice', 'backend'], type: 'service' },
+                { keywords: ['server', 'nginx', 'apache'], type: 'server' },
+                { keywords: ['cache', 'redis', 'memcache'], type: 'cache' },
+                { keywords: ['queue', 'kafka', 'rabbitmq', 'sqs'], type: 'queue' },
+                { keywords: ['auth', 'oauth', 'identity', 'iam'], type: 'auth' },
+                { keywords: ['web', 'frontend', 'ui', 'client'], type: 'web' },
+                { keywords: ['gateway', 'proxy', 'load', 'balancer'], type: 'gateway' },
+                { keywords: ['storage', 's3', 'bucket', 'blob'], type: 'storage' }
             ];
             
-            const flowKeywords = ['->', '→', '=>', '-->', 'flow', 'request', 'response', 'sends', 'calls', 'queries'];
-            const boundaryKeywords = ['zone', 'boundary', 'trust', 'perimeter', 'vpc', 'network', 'subnet', 'public', 'private', 'dmz'];
-            
-            // Extract components
-            for (const line of lines) {
-                const lowerLine = line.toLowerCase();
+            // Extract components from words
+            for (const word of words) {
+                const lowerWord = word.toLowerCase();
                 
-                for (const keyword of componentKeywords) {
-                    if (lowerLine.includes(keyword)) {
-                        let name = line.replace(/[^\w\s\-_]/g, ' ').trim();
-                        name = name.replace(/\s+/g, ' ');
-                        
-                        if (name && !seenNames.has(name) && name.length < 100) {
-                            seenNames.add(name);
-                            
-                            let type = 'component';
-                            if (lowerLine.includes('database') || lowerLine.includes('db') || lowerLine.includes('storage')) {
-                                type = 'database';
-                            } else if (lowerLine.includes('api') || lowerLine.includes('gateway')) {
-                                type = 'api';
-                            } else if (lowerLine.includes('queue') || lowerLine.includes('kafka')) {
-                                type = 'queue';
-                            } else if (lowerLine.includes('cache') || lowerLine.includes('redis')) {
-                                type = 'cache';
-                            } else if (lowerLine.includes('auth') || lowerLine.includes('identity')) {
-                                type = 'auth';
-                            } else if (lowerLine.includes('web') || lowerLine.includes('frontend')) {
-                                type = 'web';
-                            } else if (lowerLine.includes('service') || lowerLine.includes('server')) {
-                                type = 'service';
-                            }
-                            
+                for (const pattern of patterns) {
+                    if (pattern.keywords.some(kw => lowerWord.includes(kw) || kw.includes(lowerWord))) {
+                        if (!seenNames.has(word)) {
+                            seenNames.add(word);
                             components.push({
-                                name: name,
-                                type: type,
+                                name: word,
+                                type: pattern.type,
                                 description: 'Extracted via OCR'
                             });
+                            break;
                         }
-                        break;
                     }
                 }
             }
             
-            // Extract flows
-            for (const line of lines) {
-                const lowerLine = line.toLowerCase();
-                const hasFlow = flowKeywords.some(kw => lowerLine.includes(kw));
+            // If we found very few components, create generic ones
+            if (components.length < 2) {
+                const genericWords = words.filter(w => 
+                    !['the', 'and', 'for', 'with', 'from', 'into', 'that', 'this', 'have', 'are', 'was'].includes(w.toLowerCase())
+                ).slice(0, 5);
                 
-                if (hasFlow) {
-                    let source = null;
-                    let destination = null;
-                    
-                    for (const comp of components) {
-                        if (lowerLine.includes(comp.name.toLowerCase())) {
-                            if (!source) {
-                                source = comp.name;
-                            } else if (!destination) {
-                                destination = comp.name;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (source && destination && source !== destination) {
-                        let protocol = null;
-                        if (lowerLine.includes('https')) protocol = 'HTTPS';
-                        else if (lowerLine.includes('http')) protocol = 'HTTP';
-                        else if (lowerLine.includes('grpc') || lowerLine.includes('rpc')) protocol = 'gRPC';
-                        else if (lowerLine.includes('rest') || lowerLine.includes('api')) protocol = 'REST';
-                        
-                        flows.push({
-                            source: source,
-                            destination: destination,
-                            protocol: protocol,
-                            description: line.substring(0, 200),
-                            sensitive: lowerLine.includes('sensitive') || lowerLine.includes('pii') || lowerLine.includes('personal')
+                for (const word of genericWords) {
+                    if (!seenNames.has(word)) {
+                        seenNames.add(word);
+                        components.push({
+                            name: word,
+                            type: 'component',
+                            description: 'Extracted via OCR'
                         });
                     }
                 }
             }
             
-            // Extract boundaries
-            for (const line of lines) {
-                const lowerLine = line.toLowerCase();
-                const hasBoundary = boundaryKeywords.some(kw => lowerLine.includes(kw));
-                
-                if (hasBoundary) {
-                    let name = line.replace(/[^\w\s\-_]/g, ' ').trim();
-                    name = name.replace(/\s+/g, ' ');
-                    
-                    if (name && name.length >= 3) {
-                        const associatedComponents = [];
-                        for (const comp of components) {
-                            if (lowerLine.includes(comp.name.toLowerCase())) {
-                                associatedComponents.push(comp.name);
-                            }
-                        }
-                        
-                        boundaries.push({
-                            name: name,
-                            description: 'Extracted via OCR',
-                            components: associatedComponents
-                        });
-                    }
-                }
+            // Create basic flows between components
+            const flows = [];
+            for (let i = 0; i < components.length - 1; i++) {
+                flows.push({
+                    source: components[i].name,
+                    destination: components[i + 1].name,
+                    protocol: 'HTTPS',
+                    description: 'Inferred connection',
+                    sensitive: false
+                });
             }
             
             return {
                 title: filename.replace(/\.[^.]+$/, ''),
                 components: components,
                 data_flows: flows,
-                trust_boundaries: boundaries,
+                trust_boundaries: [],
                 metadata: {
                     source: 'image-ocr',
-                    extracted_text_length: text.length
+                    extracted_text_length: text.length.toString(),
+                    ocr_note: 'OCR-based extraction may be imprecise. Review and edit the architecture before analysis.'
                 }
             };
         };
@@ -206,13 +158,13 @@
                 <div class="space-y-4">
                     <h2 class="text-xl font-semibold text-gray-700">1. Upload Architecture</h2>
                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
-                        <input type="file" id="file-upload" class="hidden" accept=".xml,.json,.yaml,.yml,.puml,.png,.jpg,.jpeg,.webp,.bmp">
+                        <input type="file" id="file-upload" class="hidden" accept=".xml,.json,.yaml,.yml,.puml">
                         <label for="file-upload" class="cursor-pointer block">
                             <div class="text-gray-500 mb-2">
                                 <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                             </div>
                             <span class="text-blue-600 font-medium">Click to upload</span> or drag and drop
-                            <p class="text-xs text-gray-400 mt-1">Supports Draw.io (XML), PlantUML, JSON, YAML, Images (PNG/JPG/WEBP)</p>
+                            <p class="text-xs text-gray-400 mt-1">Supports Draw.io (XML), PlantUML, JSON, YAML</p>
                         </label>
                         <div id="file-name" class="mt-2 text-sm text-gray-700 font-medium hidden"></div>
                     </div>

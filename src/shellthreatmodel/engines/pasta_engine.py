@@ -213,7 +213,7 @@ class PASTAThreatEngine(ThreatEngine):
         for component in architecture.components:
             comp_type_lower = component.type.lower()
             zone = trust_lookup.get(component.name, "")
-            sensitive = _is_sensitive_component(component) or zone in sensitive_zones
+            sensitive = is_sensitive_component(component) or zone in sensitive_zones
             
             # Data stores are primary targets for exfiltration/impact
             if comp_type_lower in {"database", "datastore", "storage", "queue", "cache"}:
@@ -370,7 +370,7 @@ class PASTAThreatEngine(ThreatEngine):
         for component in architecture.components:
             comp_type_lower = component.type.lower()
             zone = trust_lookup.get(component.name, "")
-            sensitive = _is_sensitive_component(component) or zone in sensitive_zones
+            sensitive = is_sensitive_component(component) or zone in sensitive_zones
             
             # Admin and privileged systems
             if comp_type_lower in {"admin", "portal", "dashboard"} or "admin" in component.name.lower():

@@ -1,229 +1,130 @@
-# ShellThreatModel
+# Threat Model Automator
 
-[![python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
-[![license](https://img.shields.io/badge/license-proprietary-orange.svg)](#license)
-[![tests](https://img.shields.io/badge/tests-pytest-lightgrey.svg)](tests/)
+Automated threat modeling tool that analyzes architecture diagrams using PASTA and STRIDE/DREAD methodologies directly in your browser.
 
-> Automate STRIDE/DREAD and PASTA threat modeling directly from architecture diagrams or structured design manifests.
+## What is this?
 
-ShellThreatModel delivers production-ready threat models from PlantUML, draw.io, JSON, YAML, and even raw architecture images. It ships a deterministic rules engine, a seven-stage PASTA engine, and optional LLM augmentation, producing actionable reports and attack graphs for security teams.
+Threat Model Automator converts architecture diagrams (Draw.io, PlantUML, JSON, YAML) into comprehensive threat models with automated risk assessment. All processing happens in your browser using PyScript - no backend required, ensuring your architecture data never leaves your device.
 
-<details>
-<summary><strong>Table of Contents</strong></summary>
+## How it works
 
-- [Key Features](#key-features)
-- [Installation](#installation)
-  - [Development Setup](#development-setup)
-- [Quick Start](#quick-start)
-- [Engines at a Glance](#engines-at-a-glance)
-- [Working with Diagrams](#working-with-diagrams)
-- [Reports and Outputs](#reports-and-outputs)
-- [FastAPI Service](#fastapi-service)
-- [Configuration](#configuration)
-- [Security Considerations](#security-considerations)
-- [Project Roadmap](#project-roadmap)
-- [Development Workflow](#development-workflow)
-- [FAQ](#faq)
-- [License](#license)
+```mermaid
+graph LR
+    A[Upload Diagram] --> B{Select Engine}
+    B -->|PASTA| C[7-Stage Analysis]
+    B -->|Rules| D[STRIDE/DREAD]
+    C --> E[Generate Report]
+    D --> E
+    E --> F[View Threats]
+    E --> G[Download HTML/MD/JSON]
+    
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style E fill:#e8f5e9
+    style F fill:#fce4ec
+    style G fill:#fce4ec
+```
 
-</details>
+**Architecture Flow:**
+```
+┌─────────────────┐
+│  Browser UI     │
+│  (PyScript)     │
+└────────┬────────┘
+         │
+    ┌────▼────────────────────────┐
+    │  Architecture Parsers       │
+    │  Draw.io │ PlantUML │ JSON  │
+    └────┬────────────────────────┘
+         │
+    ┌────▼─────────────────┐
+    │  Threat Engines      │
+    │  PASTA │ Rules-based │
+    └────┬─────────────────┘
+         │
+    ┌────▼──────────────┐
+    │  Report Generator │
+    │  HTML │ MD │ JSON │
+    └───────────────────┘
+```
 
-## Key Features
+## Installation (Local Use)
 
-- **Universal parsing** – unify PlantUML, draw.io (diagrams.net), JSON, YAML, and images (OCR) into a canonical architecture model.
-- **OCR support** – extract architecture diagrams from PNG/JPG/WEBP images using Tesseract OCR (optional).
-- **Vision-to-PlantUML** – convert image diagrams to PlantUML via OpenAI vision API (optional).
-- **Browser-based UI** – upload and analyze diagrams entirely in your browser with PyScript (no backend needed).
-- **Multiple engines** – deterministic STRIDE/DREAD rules, seven-step PASTA methodology, or LLM-assisted heuristics.
-- **Rich outputs** – Markdown, HTML, JSON findings plus DREAD metrics, mitigations, and optional Graphviz attack graphs.
-- **Modern SaaS-style reports** – professional, minimal design optimized for security engineer review.
-- **API ready** – expose analyses via a FastAPI service for CI pipelines or SaaS workflows.
-- **Deployment friendly** – Typer-based CLI, Docker/PyInstaller compatible packaging, and GitHub Pages deployment.
+### Prerequisites
+- Python 3.11+
+- pip
 
-## Installation
-
-### CLI Installation
+### Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/realnits/shellthreatmodel.git
+cd shellthreatmodel
+
+# Create virtual environment
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install package
 pip install -e .
 ```
-
-### With OCR Support (optional)
-
-For parsing architecture diagrams from images (PNG, JPG, WEBP, etc.):
-
-```bash
-pip install -e .[ocr]
-```
-
-This installs Pillow and pytesseract. You'll also need Tesseract OCR installed on your system:
-
-**macOS:**
-```bash
-brew install tesseract
-```
-
-**Ubuntu/Debian:**
-```bash
-sudo apt-get install tesseract-ocr
-```
-
-**Windows:**
-Download the installer from [GitHub](https://github.com/UB-Mannheim/tesseract/wiki)
-
-### Browser-Based UI
-
-Visit the GitHub Pages deployment for a fully client-side threat modeling tool:
-https://realnits.github.io/shellthreatmodel/
-
-No installation needed – upload diagrams and analyze threats directly in your browser!
-
-ShellThreatModel targets Python 3.11+. Graphviz is recommended if you plan to render attack graphs (`brew install graphviz` on macOS).
-
-### Development Setup
-
-```bash
-pip install -e .[dev]
-pre-commit install
-```
-
-Run the full test suite with `pytest` and format using `ruff format` / `ruff check` if configured.
-
-## Quick Start
 
 ### CLI Usage
 
 ```bash
-# Deterministic STRIDE/DREAD analysis
-shellthreatmodel analyze demo.puml --mode rules --output-dir reports/
+# PASTA methodology
+shellthreatmodel analyze architecture.puml --mode pasta --output-dir reports/
 
-# Seven-stage PASTA methodology
-shellthreatmodel analyze demo.puml --mode pasta --output-dir reports/
+# STRIDE/DREAD rules-based
+shellthreatmodel analyze diagram.drawio --mode rules --output-dir reports/
 
-# AI-augmented analysis (requires OPENAI_API_KEY)
-shellthreatmodel analyze demo.puml --mode ai --openai-model gpt-4o-mini
-
-# draw.io diagram (diagrams.net) imports
-shellthreatmodel analyze diagram.drawio --mode rules
-
-# OCR-based image parsing (requires OCR dependencies)
-shellthreatmodel analyze screenshot.png --mode rules
-
-# Auto-extract from an architecture image (requires OPENAI_API_KEY)
-shellthreatmodel analyze diagram.png --mode rules --from-image
-```
-
-### Browser UI Usage
-
-1. Visit https://realnits.github.io/shellthreatmodel/
-2. Upload your architecture diagram (Draw.io, PlantUML, JSON, YAML, or Image)
-3. Select threat modeling engine (PASTA or Rules)
-4. Click "Analyze Architecture"
-5. View results and download reports (HTML/MD/JSON) or Print to PDF
-
-Each CLI run produces an `*_analysis.json` file plus Markdown, HTML, and JSON report variants in the chosen output directory. Attach `--graph-output graph.png` to emit a Graphviz attack graph.
-
-## Engines at a Glance
-
-| Mode  | Description | When to Use |
-|-------|-------------|-------------|
-| `rules` | Deterministic STRIDE/DREAD rules with DREAD scoring and mitigations. | Baseline assessments, CI/CD automation. |
-| `pasta` | Seven-stage PASTA methodology with data-flow awareness and methodology tagging. | Deep-dive risk analysis for complex systems. |
-| `ai` | LLM-assisted enrichment (OpenAI compatible). | Exploratory analysis, narrative-rich findings. |
-
-Switch engines per invocation (`--mode`) or mix outputs across different diagrams to compare methodologies.
-
-## Working with Diagrams
-
-- **PlantUML / Text manifests** – pass the `.puml`, `.json`, or `.yaml` file directly.
-- **draw.io XML** – the parser recognises `.drawio`, `.drawio.xml`, `.dio`, and `.dio.xml` exports.
-- **Images (OCR)** – upload `.png`, `.jpg`, `.jpeg`, `.webp`, `.bmp` files; the parser uses Tesseract OCR to extract text and identify components, flows, and boundaries.
-- **Images (AI Vision)** – supply `--from-image` alongside any supported image format; ShellThreatModel will invoke the OpenAI vision API to transcribe and then analyse.
-- **Trust boundaries & flows** – ensure swimlanes, groups, and connectors are labelled in draw.io for richer PASTA outputs.
-
-**OCR Tips:**
-- Use high-resolution, clear images with readable text
-- Ensure component names and flow labels are visible and well-spaced
-- Include keywords like "API", "Database", "Service" to help component identification
-- The OCR parser looks for architecture keywords and spatial relationships
-
-Use `shellthreatmodel report analysis.json --format html` to regenerate a single report or `shellthreatmodel visualize --analysis analysis.json --output graph.png` for custom graph renders.
-
-## Reports and Outputs
-
-Artifacts are emitted as:
-
-- `*_analysis.json` – canonical threat payload with STRIDE/DREAD metadata and methodology provenance.
-- `*_threats.md` / `*_threats.html` – human-readable reports suitable for PR comments or portals.
-- `graph.png` (optional) – Graphviz attack graph when `--graph-output` is provided.
-
-Integrate the JSON payload with downstream tooling or upload the HTML report directly to GitHub Pages or internal portals.
-
-## FastAPI Service
-
-Spin up the API server for programmatic access or SaaS integrations:
-
-```bash
+# Start local API server
 shellthreatmodel serve --host 127.0.0.1 --port 9000
 ```
 
-Send an analysis request:
+### Browser UI (Local)
 
 ```bash
-curl -X POST http://127.0.0.1:9000/analyze \
-  -H 'Content-Type: application/json' \
-  -d '{
-        "filename": "diagram.puml",
-        "content": "@startuml...",
-        "mode": "rules",
-        "return_graph": true
-      }'
+# Serve the web UI locally
+cd web
+python -m http.server 8080
+
+# Visit http://localhost:8080
 ```
 
-The API responds with the JSON threat report and (if requested) a base64-encoded attack graph.
+## Roadmap
 
+### Completed ✅
+- [x] Browser-based threat modeling (PyScript)
+- [x] Multi-format parsing (Draw.io, PlantUML, JSON, YAML)
+- [x] PASTA 7-stage methodology
+- [x] Rules-based STRIDE/DREAD engine
+- [x] HTML/Markdown/JSON report generation
+- [x] GitHub Pages deployment
+- [x] CLI tool
 
-## Configuration
+### In Progress 🚧
+- [ ] Enhanced visualization (interactive threat graphs)
+- [ ] Threat categorization improvements
+- [ ] Custom rule definitions
+- [ ] Report export enhancements (PDF)
 
-Environment variables:
+### Planned 🎯
+- [ ] AI-powered threat detection (optional LLM integration)
+- [ ] Attack tree generation
+- [ ] Mitigation tracking system
+- [ ] Multi-language support
+- [ ] VS Code extension
+- [ ] CI/CD integration templates
+- [ ] Threat library management
+- [ ] Comparative analysis between diagrams
+- [ ] SBOM integration for supply chain threats
+- [ ] Compliance mapping (NIST, ISO 27001, etc.)
 
-- `OPENAI_API_KEY` – enables AI and vision-powered flows.
-- `OPENAI_MODEL` – optional default model override.
-- `SHELLTHREATMODEL_OUTPUT_DIR` – default output location for CLI runs.
+---
 
-CLI flags mirror environment variables (`--openai-model`, `--output-dir`, etc.) for one-off overrides.
+**Live Demo:** https://realnits.github.io/shellthreatmodel/
 
-## Security Considerations
-
-- Strict content-type validation guards against unsupported file types; pair with container isolation for untrusted uploads.
-- AI mode never persists API keys; supply per invocation or set ephemeral environment variables.
-- When exposing the FastAPI service, add authentication, rate limiting, and logging scrubbing to match organisational policy.
-
-
-## Development Workflow
-
-```bash
-pytest
-ruff check .
-ruff format .
-```
-
-- Update or add test fixtures in `tests/` alongside new features.
-- Use feature branches and pull requests; include report screenshots or JSON snippets when relevant.
-- Publish Docker/PyInstaller artifacts via CI before tagging a release.
-
-## FAQ
-
-**Does ShellThreatModel require internet access?**
-
-- Only AI and vision modes call external APIs. Deterministic STRIDE/DREAD and PASTA analyses run entirely offline.
-
-**Can I integrate with GitHub Actions?**
-
-- Yes. Install the package, run `shellthreatmodel analyze ...`, and upload generated reports as artifacts or PR comments.
-
-**How do I customise mitigations or rules?**
-
-- Extend the rules engine tables under `src/shellthreatmodel/engines` or overlay custom YAML rulepacks and pass them via CLI.
+**License:** MIT

@@ -34,7 +34,10 @@ def _download_text(filename: str, text: str, mime: str) -> None:
 async def setup():
     # Install the package without dependency checking (Pyodide has older versions)
     try:
-        await micropip.install("./shellthreatmodel-0.1.0-py3-none-any.whl", deps=False)
+        # Use relative path from current page location
+        wheel_url = "shellthreatmodel-0.1.0-py3-none-any.whl"
+        console.log(f"Installing package from: {wheel_url}")
+        await micropip.install(wheel_url, deps=False)
         console.log("Package installed successfully")
     except Exception as e:
         console.error(f"Failed to install package: {e}")

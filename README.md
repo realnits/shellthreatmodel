@@ -8,46 +8,77 @@ Threat Model Automator converts architecture diagrams (Draw.io, PlantUML, JSON, 
 
 ## How it works
 
+### User Workflow
 ```mermaid
-graph LR
-    A[Upload Diagram] --> B{Select Engine}
-    B -->|PASTA| C[7-Stage Analysis]
-    B -->|Rules| D[STRIDE/DREAD]
-    C --> E[Generate Report]
-    D --> E
-    E --> F[View Threats]
-    E --> G[Download HTML/MD/JSON]
+flowchart TD
+    Start([👤 User Starts]) --> Upload[📤 Upload Architecture Diagram<br/>Draw.io · PlantUML · JSON · YAML]
+    Upload --> Engine{🎯 Select Analysis Engine}
     
-    style A fill:#e3f2fd
-    style B fill:#fff3e0
-    style C fill:#f3e5f5
-    style D fill:#f3e5f5
-    style E fill:#e8f5e9
-    style F fill:#fce4ec
-    style G fill:#fce4ec
+    Engine -->|Option 1| PASTA[🔍 PASTA Engine<br/>7-Stage Methodology<br/>• Define Objectives<br/>• Define Technical Scope<br/>• Decompose Application<br/>• Threat Analysis<br/>• Vulnerability Analysis<br/>• Attack Modeling<br/>• Risk Assessment]
+    
+    Engine -->|Option 2| Rules[⚡ Rules Engine<br/>STRIDE/DREAD<br/>• Spoofing<br/>• Tampering<br/>• Repudiation<br/>• Info Disclosure<br/>• DoS<br/>• Elevation]
+    
+    PASTA --> Process[⚙️ Process in Browser<br/>No server · No upload · Privacy first]
+    Rules --> Process
+    
+    Process --> Results[📊 View Results<br/>Threats · Risks · Mitigations]
+    Results --> Export[💾 Export Reports<br/>HTML · Markdown · JSON]
+    Export --> End([✅ Done])
+    
+    style Start fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    style Upload fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style Engine fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    style PASTA fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style Rules fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style Process fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style Results fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style Export fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    style End fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
 ```
 
-**Architecture Flow:**
-```
-┌─────────────────┐
-│  Browser UI     │
-│  (PyScript)     │
-└────────┬────────┘
-         │
-    ┌────▼────────────────────────┐
-    │  Architecture Parsers       │
-    │  Draw.io │ PlantUML │ JSON  │
-    └────┬────────────────────────┘
-         │
-    ┌────▼─────────────────┐
-    │  Threat Engines      │
-    │  PASTA │ Rules-based │
-    └────┬─────────────────┘
-         │
-    ┌────▼──────────────┐
-    │  Report Generator │
-    │  HTML │ MD │ JSON │
-    └───────────────────┘
+### Technical Architecture
+```mermaid
+flowchart TB
+    subgraph Browser["🌐 Browser Environment - Client Side Only"]
+        UI[Web Interface<br/>PyScript + Tailwind CSS]
+        
+        subgraph Parsers["📑 Architecture Parsers"]
+            P1[Draw.io Parser<br/>.drawio · .xml]
+            P2[PlantUML Parser<br/>.puml]
+            P3[JSON Parser<br/>.json]
+            P4[YAML Parser<br/>.yaml · .yml]
+        end
+        
+        subgraph Core["🧠 Analysis Core"]
+            Arch[Architecture Model<br/>Components · Flows · Boundaries]
+        end
+        
+        subgraph Engines["⚙️ Threat Modeling Engines"]
+            E1[PASTA Engine<br/>Process for Attack<br/>Simulation & Threat Analysis]
+            E2[Rules Engine<br/>STRIDE Categories<br/>DREAD Scoring]
+        end
+        
+        subgraph Output["📤 Report Generation"]
+            R1[HTML Report<br/>Interactive & Printable]
+            R2[Markdown Report<br/>Git-friendly]
+            R3[JSON Export<br/>API Integration]
+        end
+    end
+    
+    User([👤 User]) -->|Upload File| UI
+    UI --> Parsers
+    Parsers -->|Parse & Extract| Core
+    Core -->|Analyze| Engines
+    Engines -->|Generate| Output
+    Output -->|Download/View| User
+    
+    style Browser fill:#f5f5f5,stroke:#333,stroke-width:3px
+    style UI fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style Parsers fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style Core fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style Engines fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style Output fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style User fill:#e1f5fe,stroke:#0288d1,stroke-width:3px
 ```
 
 ## Installation (Local Use)

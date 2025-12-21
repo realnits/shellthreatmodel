@@ -335,6 +335,38 @@ async def setup():
             )
         findings_cards_html = "".join(findings_cards_parts)
 
+        # Build trust boundaries section
+        if not (architecture.trust_boundaries or []):
+            trust_boundaries_html = '<div class="text-sm text-gray-600 italic">No trust boundaries defined</div>'
+        else:
+            trust_table_rows = []
+            for b in (architecture.trust_boundaries or []):
+                component_badges = ''.join([
+                    f'<span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs font-mono">{comp}</span>'
+                    for comp in (b.components or [])
+                ])
+                trust_table_rows.append(
+                    f"<tr class='border-t'>"
+                    f"<td class='p-2 border font-semibold'>{b.name}</td>"
+                    f"<td class='p-2 border text-gray-600'>{b.description or ''}</td>"
+                    f"<td class='p-2 border'><div class='flex flex-wrap gap-1'>{component_badges}</div></td>"
+                    f"</tr>"
+                )
+            trust_boundaries_html = f"""<div class="overflow-x-auto">
+                <table class="min-w-full text-sm border">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="text-left p-2 border">Boundary Name</th>
+                            <th class="text-left p-2 border">Description</th>
+                            <th class="text-left p-2 border">Components</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {''.join(trust_table_rows)}
+                    </tbody>
+                </table>
+            </div>"""
+
         # Header with executive summary
         html = f"""
         <div class="bg-gradient-to-r from-indigo-50 to-blue-50 -m-6 p-6 mb-6 rounded-t-lg">
@@ -413,6 +445,11 @@ async def setup():
                     <div class="text-2xl font-bold text-gray-800">{len(architecture.trust_boundaries or [])}</div>
                     <div class="text-xs text-gray-600 font-semibold uppercase">Trust Boundaries</div>
                 </div>
+            </div>
+
+            <div class="mb-6">
+                <h4 class="font-semibold text-gray-700 mb-2">Trust Boundaries</h4>
+                {trust_boundaries_html}
             </div>
 
             <div class="mb-6">

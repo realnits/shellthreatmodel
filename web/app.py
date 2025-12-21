@@ -127,12 +127,16 @@ async def setup():
             console.log(f"Loading architecture from {input_path}")
             architecture = load_architecture(input_path)
             
-            # Select Engine
+            # Select Engine based on methodology
             engine_type = document.getElementById("engine-select").value
             if engine_type == "pasta":
                 engine = PASTAThreatEngine()
+            elif engine_type == "stride":
+                engine = RulesThreatEngine()  # Uses STRIDE categories
+            elif engine_type == "dread":
+                engine = RulesThreatEngine()  # Uses DREAD scoring
             else:
-                engine = RulesThreatEngine()
+                engine = RulesThreatEngine()  # Default
             
             # Generate Threats
             console.log(f"Generating threats using {engine.name} engine")

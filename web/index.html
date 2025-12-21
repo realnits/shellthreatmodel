@@ -149,7 +149,7 @@
     <div class="container mx-auto px-4 py-8 max-w-6xl">
         <header class="mb-8 text-center">
             <h1 class="text-4xl font-bold text-gray-900 mb-2">Threat Model Automator</h1>
-            <p class="text-lg text-gray-600">Automated PASTA & STRIDE/DREAD threat modeling from your browser</p>
+            <p class="text-lg text-gray-600">Automated threat modeling with STRIDE, DREAD, and PASTA methodologies</p>
         </header>
 
         <main class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
@@ -175,10 +175,11 @@
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">2. Configure Analysis</h2>
                     <div class="bg-gray-50 rounded-lg p-6 space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Threat Engine</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Threat Modeling Methodology</label>
                             <select id="engine-select" class="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 p-3 bg-white text-gray-900">
-                                <option value="pasta">PASTA (Process for Attack Simulation)</option>
-                                <option value="rules">Rules-based (STRIDE/DREAD)</option>
+                                <option value="stride">STRIDE (Spoofing, Tampering, Repudiation, Info Disclosure, DoS, Elevation)</option>
+                                <option value="dread">DREAD (Damage, Reproducibility, Exploitability, Affected Users, Discoverability)</option>
+                                <option value="pasta">PASTA (Process for Attack Simulation and Threat Analysis)</option>
                             </select>
                             <p class="text-xs text-gray-500 mt-2">Choose your threat modeling methodology</p>
                         </div>
